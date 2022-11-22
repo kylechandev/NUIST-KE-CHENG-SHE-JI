@@ -1,0 +1,596 @@
+<!--头部查询面板-->
+<div class="layui-card">
+    <div class="layui-card-header"><b>查询</b></div>
+    <div class="layui-card-body select">
+        <form class="" style="padding: 15px">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>用户名</label>
+                    <input class="form-control" type="text" name="username" placeholder="请输入用户名" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>真实姓名</label>
+                    <input class="form-control" type="text" name="realname" placeholder="请输入真实姓名" autocomplete="off">
+                </div>
+            </div>
+            <div class="row" style="text-align:center;">
+                <button class="layui-btn layui-btn-normal " lay-submit lay-filter="form">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>用户管理</b></div>
+    <div class="layui-card-body">
+        <table id="layui_table_id" lay-filter="test">
+            <!--头部工具栏-->
+            <script type="text/html" id="toolbar">
+                <div class=" layui-btn-container" style="z-index: 1">
+                    <div class="layui-btn-group">
+                        <button class="layui-btn  layui-btn-sm" lay-event="add">&nbsp;&nbsp;添加&nbsp;&nbsp;</button>
+                        <!--<button class="layui-btn layui-btn-sm" lay-event="setRole">设置角色</button>-->
+                        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">批量删除</button>
+                        <button class="layui-btn  layui-btn-normal  layui-btn-sm" lay-event="import">导入数据</button>
+                        <a class="layui-btn  layui-btn-normal  layui-btn-sm" href="/userTemplate/export">下载账号模板</a>
+
+                    </div>
+                </div>
+            </script>
+            <!--行内工具栏-->
+            <script type="text/html" id="tool">
+                <div class="layui-btn-container">
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="saveRole">设置角色</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="updatePass">修改密码</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </div>
+            </script>
+        </table>
+    </div>
+</div>
+
+</div>
+<!--导入数据表单-->
+<form id='upload' style="padding: 20px;display: none">
+    <input id="file" type="file" name="file"
+           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+    <input id="path" type="text" disabled style="display: none;"/>
+    <br>
+    <div style="text-align:center;">
+        <button class="layui-btn layui-btn-normal " lay-submit lay-filter="form">导入账号</button>
+    </div>
+</form>
+<script>
+    $(function () {
+        var file = $("#file")
+        file.change(function () {
+            var formData = new FormData();
+            formData.append('file', $('#file')[0].files[0]); // 固定格式
+            $.ajax({
+                url: "/uploadExcel",
+                type: "POST",
+                cache: false,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.code == 0) {
+                        layer.msg("上传成功", {icon: 1});
+                        $("#path").val(data.data)
+                    }
+                    else
+                        layer.msg("上传失败", {icon: 1});
+                },
+                fail: function (data) {
+                    layer.msg("上传失败", {icon: 1});
+                }
+            });
+        });
+    });
+</script>
+<!--数据 男女转换-->
+<script type="text/html" id="sex">
+    {{#  if(d.sex == 0){ }}
+    <div class="layui-table-cell laytable-cell-2-0-6">男</div>
+    {{#  } else { }}
+    <div class="layui-table-cell laytable-cell-2-0-6">女</div>
+    {{#  } }}
+</script>
+<!--启用禁用-->
+<!--<script type="text/html" id="enable">-->
+<!--    {{#  if(d.enable == 1){ }}-->
+<!--    <input id={{d.id}} lay-filter="switch" type="checkbox" name="enable" lay-skin="switch" lay-text="启用|禁用" checked>-->
+<!--    {{#  } else { }}-->
+<!--    <input id={{d.id}} lay-filter="switch" type="checkbox" name="enable" lay-skin="switch" lay-text="启用|禁用">-->
+<!--    {{#  } }}-->
+<!--</script>-->
+<!--角色-->
+<script type="text/html" id="role">
+    {{#  if(d.userRole !=null ){ }}
+    <span><strong>{{d.userRole.description}}</strong></span>
+    {{#  } else { }}
+    <span><strong>无</strong></span>
+    {{#  } }}
+</script>
+<!--隐藏角色面板-->
+<div id="saveRole" style=" display:none; padding: 20px;background-color: #F2F2F2">
+    <div id="transfer" style="text-align:center; border: 1px solid #F2F2F2"></div>
+    <BR>
+    <div style="text-align:center;">
+        <button class="layui-btn layui-btn-normal " lay-submit lay-filter="form">保存角色</button>
+    </div>
+</div>
+
+<!--数据表格组件-->
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+//执行渲染
+        var datatable = table.render({
+            id: "dataTable",
+            elem: '#layui_table_id',//指定原始表格元素选择器（推荐id选择器）
+            url: '/user/get',//数据接口
+
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [15,30,50,80,100,500], //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 15, //每页默认显示的数量
+            toolbar: '#toolbar',//开启自定义工具行，指向自定义工具栏模板选择器
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'id', title: 'ID', align: 'center'},
+                    {field: 'username', title: '用户名', align: 'center'},
+                    {field: 'phone', title: '手机号', align: 'center'},
+                    {field: 'email', title: '邮箱', align: 'center'},
+                    {field: 'realname', title: '真实姓名', align: 'center'},
+                    {field: 'sex', title: '性别', templet: '#sex'},
+                    {field: 'department', title: '系别', align: 'center'},
+                    {field: 'team', title: '班级', align: 'center'},
+                    {field: 'startSchoolYear', title: '入校时间', align: 'center'},
+                    {field: 'leaveSchoolYear', title: '离校时间', align: 'center'},
+                    {field: "userRole", title: '角色', align: 'center', templet: '#role'},
+                    {title: '用户状态', width: 90, fixed: 'right', templet: '#enable'},
+                    {title: '操作', fixed: 'right', width: 260, align: 'center', toolbar: '#tool'}  //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+
+
+        });
+
+        alert(cols);
+//监听每行按钮事件
+        table.on('tool(test)', function (obj) {
+            switch (obj.event) {
+                //删除信息
+                case 'del':
+                    var ids = obj.data.id;
+                    layer.confirm('真的删除  ID  为  <span style="color: red">' + ids + '</span>  的行吗？', function (index) {
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        postResponse("/user/del", {ids: obj.data.id})
+                    });
+                    break;
+                //编辑信息
+                case 'edit':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "编辑" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+//                        , area: ['600px', '700px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form").html()     //内容
+                        , success: function (layero, index) {
+                            $(layero.selector + " input[name='username']").attr("disabled", "disabled")
+                            $(layero.selector + " input[name='password']").attr("disabled", "disabled")
+                            var data = obj.data;
+                            $(layero.selector).addClass("edit");
+                            $.each(data, function (key, value) {
+                                if (key == 'sex') {
+                                    $(layero.selector + " input[value=" + value + "]").attr("checked", "checked");
+                                }
+                                else {
+                                    $(layero.selector + " input[name=" + key + "]").val(value);
+                                }
+                            })
+                        }
+                    });
+                    break;
+                case 'updatePass':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "修改密码" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+//                        , area: ['600px', '700px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#pass").html()
+                        , success: function (layero, index) {
+                            var data = obj.data;
+                            $(layero.selector).addClass("updatePass");
+                            $.each(data, function (key, value) {
+                                $(layero.selector + " input[name=" + key + "]").val(value);
+                            })
+                        }
+                    });
+                    break;
+                case 'saveRole':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "设置角色" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['550px', '520px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#saveRole")
+                        , success: function (layero, index) {
+                            $(layero.selector).addClass('saveRole');
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+
+                            var data = obj.data;
+                            $("#saveRole #transfer").attr("uid", data.id);
+                            var text = "<div class='curDiv' style='text-align: left'>当前用户：<b>" + data.username + "</b></div>"
+                            $("#saveRole div").remove(".curDiv")
+                            $("#saveRole").prepend(text);
+                            var url1 = "/role/getAll"
+                            var url2 = "/userRole/get"
+                            $.get(url1, function (data1) {
+                                $.get(url2, {"id": obj.data.username}, function (data2) {
+//                                console.log(data.temp)
+                                    var dataLeft = data1.data;
+                                    var dataRight = data2.data;
+                                    var temp = [];
+                                    $.each(dataRight, function (i, val) {
+                                        temp.push(val.id)
+                                    })
+                                    dataRight = temp;
+                                    console.log(dataRight)
+                                    layui.use('transfer', function () {
+                                        var transfer = layui.transfer;
+                                        //渲染
+                                        transfer.render({
+                                            elem: '#transfer'  //绑定元素
+                                            , data: dataLeft
+                                            , value: dataRight
+                                            , title: ["全部角色", "当前角色"]
+                                            , id: 'curRole' //定义索引
+                                            , parseData: function (res) {
+                                                return {
+                                                    "value": res.id //数据值
+                                                    , "title": res.description //数据标题
+//                                                ,"disabled": res.disabled  //是否禁用
+//                                                ,"checked": res.checked //是否选中
+                                                }
+                                            }
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                        , end: function () {
+                            $("#saveRole").hide();
+                        }
+                    });
+                    break;
+            }
+            ;
+        });
+//监听表格头部工具条事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                //添加用户
+                case 'add':
+//                    page("","添加");
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "添加" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+//                        , area: ['600px', '450px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form").html()     //内容
+                        , success: function (layero, index) {
+                            $(layero.selector).addClass("add");
+                            ;
+
+                        }
+                    });
+                    layui.form.render()
+                    break
+                case 'import':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "导入账号" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['400px', '450px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#upload")     //内容
+                        , success: function (layero, index) {
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+                            $(layero.selector).addClass("center-block");
+                            $(layero.selector).addClass("import");
+
+                        }
+                        , end: function () {
+                            $("#upload").hide();
+                        }
+                    });
+                    break;
+                //批量删除
+                case 'del':
+                    var data = checkStatus.data;
+                    if (data != "") {
+                        var arr = [];
+                        for (var i = 0; i < data.length; i++) { //循环筛选出id
+                            arr.push(data[i].id);
+                        }
+                        var ids = arr.join(',')
+                        layer.confirm('真的删除  ID  为  <span style="color: #ff0000">' + ids + '</span>  的行吗？', function (index) {
+                            layer.close(index);
+                            postResponse("/user/del", {ids: ids});
+                        });
+                    }
+                    else
+                        layer.msg("没有选择数据", {icon: 0})
+                    break;
+            }
+            ;
+        });
+    });
+    //表单提交
+    layui.use('form', function () {
+        var form = layui.form;
+        var edit = '/user/save';
+        var add = '/user/add';
+        var updatePass = '/user/updatePass/ById';
+        var select = '/user/fuzzySelect';
+        var saveRole = '/userRole/save';
+        var fileimport = '/user/import';
+        var reloadUrl;
+        //监听提交
+        form.on('submit(form)', function (obj) {
+            var url, data;
+            if ($(this).parents("div").hasClass("edit")) {
+                url = edit;
+                data = $(".edit form").serialize()
+                console.log(data)
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("updatePass")) {
+                url = updatePass;
+                data = $(".updatePass form").serialize()
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("add")) {
+                url = add;
+                data = $(".add form").serialize()
+                postResponse(url, data);
+            } else if ($(this).parents("div").hasClass("select")) {
+                url = select;
+                data = $(".select form").serialize()
+                data = decodeURIComponent(data, true);//对serialize后的参数值进行一次解码，防止中文乱码
+                console.log(data)
+                getResponse(url, data);
+            } else if ($(this).parents("div").hasClass("saveRole")) {
+                url = saveRole;
+                var uid = $("#saveRole #transfer").attr("uid");
+                url = url + "?uid=" + uid;
+                var getData = layui.transfer.getData('curRole');
+                getData = JSON.stringify(getData).replace(/"value"/g, "'roleId'").replace(/}/g, ",'uid':" + uid + "}").replace(/'/g, "\"")
+                    .replace(/"title":"[A-Za-z0-9_-\u4e00-\u9fa5]*"/g, "").replace(/,,/g, ",").replace(/{,/g, "{").replace(/,}/, "}");
+                ajaxJsonResponse(url, getData);
+            } else if ($(this).parents("div").hasClass("import")) {
+                url = fileimport;
+                data ="path="+$("#path").val();
+                batchPost(url, data);
+            } else {
+                layer.msg('非法操作', {icon: 5});
+                return false;
+            }
+            return false;
+        });
+
+    });
+    //更改用户状态
+    layui.form.on('switch(switch)', function (data) {
+        var enable = data.elem.checked ? '1' : '0';
+        var id = data.elem.id;
+        postResponse("/user/updateEnable", {id: id, enable: enable})
+        layer.closeAll();
+    })
+
+    //AJAX响应判断
+    function getResponse(url, data) {
+        var reloadUrl = url;
+        layer.msg("操作成功", {icon: 1});
+        //将表单数据构造成json对象
+        var s = "{" + data + "}";
+        s = s.replace(/&/g, ",").replace(/=/g, ":").replace(/:/g, '":"').replace(/,/g, '","').replace(/{/g, '{"').replace(/}/g, '"}');
+        var jsonobj = JSON.parse(s)
+        layui.table.reload('dataTable', {
+            url: reloadUrl,
+            where: jsonobj,
+        });
+        layer.closeAll();
+    }
+
+    function ajaxJsonResponse(url, data) {
+        var index = layer.load(2, {time: 10*1000}); //又换了种风格，并且设定最长等待10秒
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json;charset=UTF-8',
+            data: data,
+            success: function (data) {
+                layer.closeAll();
+                //关闭
+                var reloadUrl = "/user/get"
+                if (Number(data.code) == 0) {
+                    layer.msg("操作成功,设置了" + data.count + "个", {icon: 1});
+                    layui.table.reload('dataTable', {
+                        url: reloadUrl,
+                });
+                }
+                else {
+                    layer.msg(data.msg, {icon: 2})
+                }
+            }
+        });
+    }
+    function batchPost(url, data) {
+        var index = layer.load(1); //又换了种风格，并且设定最长等待10秒
+        $.post(url, data, function (data) {
+            var reloadUrl = "/user/get"
+            if (Number(data.code) == 0) {
+                //关闭
+                layer.closeAll();
+                layer.alert(data.msg, {icon: 3});
+                layui.table.reload('dataTable', {
+                    url: reloadUrl,
+                });
+                $("#path").val("");
+                $("#file").val("");
+            }
+            else {
+                layer.closeAll();
+                layer.msg(data.msg, {icon: 2})
+            }
+        });
+    }
+    function postResponse(url, data) {
+        $.post(url, data, function (data) {
+            var reloadUrl = "/user/get"
+            if (Number(data.code) == 0) {
+                layer.closeAll();
+                layer.msg("操作成功", {icon: 1});
+                layui.table.reload('dataTable', {
+                    url: reloadUrl,
+                });
+            }
+            else {
+                layer.msg(data.msg, {icon: 2})
+            }
+        });
+    }
+
+
+</script>
+<!--隐藏密码框-->
+<div id="pass" style="display: none;">
+    <form class="" style="padding: 15px">
+        <input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">
+        <div class="form-group col-md-12 ">
+            <label>密码<span style="color: red">*</span></label>
+            <input class="form-control" type="password" name="password" placeholder="请输入密码" autocomplete="off">
+        </div>
+        <div class="form-group  col-md-12 " style="text-align:center">
+            <button class="layui-btn layui-btn-sm " lay-submit lay-filter="form">立即提交</button>
+        </div>
+    </form>
+</div>
+
+<!--隐藏编辑框-->
+<div id="form" class="center-block" style="display: none;">
+    <form class="" style="padding: 30px">
+        <input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>用户名<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="username" placeholder="请输入用户名"
+                       autocomplete="off">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>密码<span style="color: red">*</span></label>
+                <input class="form-control" type="password" name="password" placeholder="请输入密码"
+                       autocomplete="off">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>真实姓名<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="realname" placeholder="" autocomplete="off">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>邮箱</label>
+                <input class="form-control" type="text" name="email" placeholder="" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>手机号</label>
+                <input class="form-control" type="text" name="phone" placeholder="" autocomplete="off">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>性别</label><br>
+                <label>男
+                    <input class="" id="man" type="radio" name="sex" value="0" checked>
+                </label>&nbsp;&nbsp;&nbsp;
+                <label>女
+                    <input class="" id="woman" type="radio" name="sex" value="1">
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>系别</label>
+                <input class="form-control" type="text" name="department" placeholder=""
+                       autocomplete="off">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>班级</label>
+                <input class="form-control" type="text" name="team" placeholder="" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label>入校时间</label>
+                <input class="form-control" type="text" name="startSchoolYear" placeholder=""
+                       autocomplete="off">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>离校时间</label>
+                <input class="form-control" type="text" name="leaveSchoolYear" placeholder=""
+                       autocomplete="off">
+            </div>
+        </div>
+        <div class="row" style="text-align:center;">
+            <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+</div>
+
+

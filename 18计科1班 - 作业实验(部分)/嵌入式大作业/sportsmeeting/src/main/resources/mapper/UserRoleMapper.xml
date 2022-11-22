@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.UserRoleMapper">
+    <resultMap id="BaseResultMap" type="com.fht.entity.UserRole">
+        <id column="uid" jdbcType="INTEGER" property="uid"/>
+        <id column="role_id" jdbcType="INTEGER" property="roleId"/>
+        <id column="content" property="content"/>
+        <id column="description" property="description"/>
+    </resultMap>
+    <!--********************************************删除操作********************************************-->
+    <delete id="deleteByUid" parameterType="java.lang.Integer">
+    delete from user_role
+    where uid = #{uid,jdbcType=INTEGER}
+  </delete>
+    <delete id="batchDeleteByUid">
+        DELETE FROM `user_role` where `uid` in
+        <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--********************************************插入操作********************************************-->
+    <insert id="insert" parameterType="com.fht.entity.UserRole">
+    insert into user_role (`uid`, role_id)
+    values (#{uid,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER})
+  </insert>
+    <insert id="batchInsert" parameterType="com.fht.entity.Role">
+        insert ignore into user_role (`uid`, role_id)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.uid,jdbcType=INTEGER}, #{item.roleId,jdbcType=INTEGER}
+            </trim>
+        </foreach>
+    </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select `uid`, role_id
+    from user_role
+  </select>
+    <!--*******************************************查询操作********************************************-->
+    <select id="selectUserRole" resultMap="BaseResultMap">
+    select ur.uid,group_concat(ur.role_id),group_concat(r.content) as content ,group_concat(r.description) as description
+    from user_role ur
+    left join role r on ur.role_id = r.id
+    where ur.uid = #{id} GROUP BY ur.uid limit 1
+  </select>
+    <select id="getByUid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select `uid`, role_id
+    from user_role
+    where uid = #{id,jdbcType=INTEGER}
+    </select>
+</mapper>

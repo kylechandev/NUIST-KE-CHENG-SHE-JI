@@ -1,0 +1,30 @@
+<!--项目编排时间线-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>赛事进程</b></div>
+    <div class="layui-card-body">
+        <div class="time-line">
+            <ul class="layui-timeline">
+            </ul>
+        </div>
+    </div>
+</div>
+</div></div>
+</div>
+<script>
+    function time_line_refresh() {
+        $.get("/competition/getByTimeAsc", {page: 0, limit: 0}, function (data) {
+            var text = "";
+            $.each(data.data, function (key, value) {
+                text += "<li class=\"layui-timeline-item\"><i class=\"layui-icon layui-timeline-axis\"></i><div class=\"layui-timeline-content layui-text\">" +
+                    "<div class=\"layui-timeline-title\"><h4 style='color:#e32044;'>" + value.time + "</h4><b>" +
+                    "<br>" + value.name + "</b>（" + value.kind + "）" + "</div></div></li>"
+            })
+            $(".time-line ul").html("");
+            $(".time-line ul").append(text)
+//        $(".time-line").trigger( "create" );
+        })
+    }
+
+    time_line_refresh();
+</script>
+

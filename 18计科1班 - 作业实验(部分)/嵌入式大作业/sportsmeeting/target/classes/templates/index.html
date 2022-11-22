@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="common/common_header :: common_header(~{::title},~{::link},~{},~{})">
+    <title>高校运动会管理系统</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+<!--上部分大盒子-->
+<div class="box-bg">
+    <div class="container ">
+        <!--头部导航行div-->
+        <div class="row">
+            <div class="col-md-8">
+                <img src="../static/img/logo.png" class="img-logo" alt="Responsive image"><span class=" logo-text"
+                                                                                                style="">高校运动会管理系统</span>
+            </div>
+            <!--<div class="col-md-4"><a type="button " href="/main" class="btn  btn-info">首页</a></div>-->
+        </div>
+        <!--大div-->
+        <div class="row">
+            <!--公告div-->
+            <div class="col-md-8">
+                <div class="informbox "><h2>公告<a href="/news" target="_blank">More&gt;&gt;</a></h2>
+                    <ul id="news" class=" articlelist list-unstyled clearfix">
+                        无
+                    </ul>
+                </div>
+            </div>
+            <!--登录div-->
+            <div class="col-md-4">
+                <div class="loginbox "><h2>登录</h2><br>
+                    <form id="login_form" class="form-horizontal" action="login" method="POST"><br>
+                        <div class="input-group margin-bottom-sm">
+                            <span class="input-group-addon"><i class="fa fa-address-card-o fa-fw"></i></span>
+                            <input name="username" class="form-control" type="text" placeholder="请输入用户名">
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>
+                            <input name="password" class="form-control" type="password" placeholder="请输入密码">
+                        </div>
+                        <br>
+                        <a onclick="login_click();" type="button" class="center-block btn btn-info btn-block">登录</a>
+                        <!--<a class="resetPwd" href="ResetPasswords.html">忘记密码？</a>-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--下底部大盒子-->
+    <div class="container-fluid  footer-container ">
+        <!--<div class="row col-md-12 ">--
+        <!--</div>-->
+    </div>
+</div>
+
+<script th:inline="javascript">
+    //判断当前页面是否是顶级窗口   嵌套页面会是修改地址栏url
+    if (window.location.href != window.location.origin + "/")
+        window.location.href = "/"
+
+    window.onload = function () {
+        if (!!([[${msg}]])) {
+            var msg = [[${msg}]];
+            console.log(msg);
+            alert(msg)
+        }
+    }
+
+    //登录请求
+    function login_click() {
+        var data = $("#login_form").serialize();
+        $.post("/login", data, function (data) {
+            if (data.code == 0) {
+                window.location.href = "/main";
+            }
+            else
+                alert(data.msg)
+        })
+        console.log(data)
+    }
+
+    $.get("/news/get", {'page': 1, 'limit': 5}, function (obj) {
+        var data = obj.data;
+        var html = "";
+        $.each(data, function (key, value) {
+            var li = "<li><i class=\"fa  fa-angle-double-right\"></i>&nbsp;" +
+                "<a class=\"inform\" href='/news?id=" + value.id + "'  target=\"_blank\"  title=\"" + value.title + "\" >" + value.title + "</a>" +
+                "<span class=\"time\">" + value.createTime + "</span></li>\n"
+            html += li;
+        })
+        $("#news").html(html)
+    })
+
+
+</script>
+</body>
+</html>
+

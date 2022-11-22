@@ -1,0 +1,429 @@
+<!--头部查询面板-->
+<div class="layui-card">
+    <div class="layui-card-header"><b>查询</b></div>
+    <div class="layui-card-body select">
+        <form class="" style="padding: 15px">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>用户名</label>
+                    <input class="form-control" type="text" name="username" placeholder="请输入用户名" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>真实姓名</label>
+                    <input class="form-control" type="text" name="realname" placeholder="请输入真实姓名" autocomplete="off">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>项目名</label>
+                    <input class="form-control" type="text" name="cname" placeholder="请输入项目名" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>类别</label>
+                    <input class="form-control" type="text" name="ckind" placeholder="请输入项目类别" autocomplete="off">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>院系</label>
+                    <input class="form-control" type="text" name="department" placeholder="请输入院系" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>班级</label>
+                    <input class="form-control" type="text" name="team" placeholder="请输入班级" autocomplete="off">
+                </div>
+            </div>
+            <div class="row" style="text-align:center;">
+                <button class="layui-btn layui-btn-normal " lay-submit lay-filter="form">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>报名管理</b></div>
+    <div class="layui-card-body">
+        <table id="layui_table_id" lay-filter="test">
+            <!--头部工具栏-->
+            <script type="text/html" id="toolbar">
+                <div class="layui-btn-container" style="z-index: 1">
+                    <div class="layui-btn-group">
+                        <button class="layui-btn  layui-btn-warm layui-btn-sm" lay-event="add">&nbsp;&nbsp;报名&nbsp;&nbsp;</button>
+                        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">批量删除</button>
+                    </div>
+                </div>
+            </script>
+            <!--行内工具栏-->
+            <script type="text/html" id="tool">
+                <div class="layui-btn-container">
+                    <a class="layui-btn  layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </div>
+            </script>
+        </table>
+    </div>
+</div>
+
+<!--隐藏编辑框-->
+<div id="form" class="center-block" style="display: none;">
+    <form class="" style="padding: 30px">
+        <input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">
+        <div class="row center-block">
+            <div class="form-group col-md-6">
+                <label>用户名<span style="color: red">*</span></label>
+                <input class="form-control" type="hidden" name="uid" placeholder="" autocomplete="off"  >
+                <input class="form-control" type="text"  name="username" placeholder="请输入用户名" autocomplete="off" disabled="disabled" >
+                <!--<label class="layui-form-label">搜索选择框</label>-->
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>项目名<span style="color: red">*</span></label>
+                <div class="layui-form layui-input-inline">
+                    <select  name="cid" lay-verify="required" lay-search="">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row" style="text-align:center;">
+            <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+        </div>
+    </form>
+</div>
+<!--隐藏编辑框-->
+<div id="form1" class="center-block" style="display: none;">
+    <form class="" style="padding: 30px">
+        <!--<input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">-->
+        <div class="row center-block">
+            <div class="form-group col-md-6 ">
+                <label>用户名<span style="color: red">*</span></label>
+                <div class="layui-form layui-input-inline">
+                    <select id="uid" name="uid" lay-filter="change"   class="select" lay-verify="required" lay-search="">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>项目名<span style="color: red">*</span></label>
+                <div  class="layui-form layui-input-inline">
+                    <select id="cid" lay-filter="change"   class="select" name="cid" lay-verify="required" lay-search="">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row center-block">
+            <div class="form-group col-md-6 ">
+                <label>项目类别<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="kind" placeholder="" autocomplete="off"
+                       disabled="disabled">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>限制人数<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="capita" placeholder="" autocomplete="off"
+                       disabled="disabled">
+            </div>
+        </div>
+        <div class="row center-block">
+            <div class="form-group col-md-6 ">
+                <label>是否已报名<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="isApply" placeholder="" autocomplete="off"
+                       disabled="disabled">
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>已报名人数<span style="color: red">*</span></label>
+                <input class="form-control" type="text" name="applyCapita" placeholder="" autocomplete="off"
+                       disabled="disabled">
+            </div>
+        </div>
+        <br>
+        <div class="row" style="text-align:center;">
+            <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+        </div>
+    </form>
+</div>
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#time'
+            , type: 'datetime'
+        });
+    });
+</script>
+
+
+<script>
+    layui.form.on('select(change)', function(data){
+        var cid = layui.$('#cid').val();
+        var uid = layui.$("#uid").val()
+        if (cid!=""&&uid!="") {
+            $.get("/competition/getById", {"id": cid}, function (data) {
+                $.each(data.data, function (key, value) {
+                    $("#form1" + " input[name=" + key + "]").val(value);
+                })
+                layui.form.render();
+            })
+            console.log(uid)
+            var d1 = {"cid": cid, "uid": uid}
+            $.get("/userCompetition/getDetail", d1, function (data) {
+                $("#form1" + " input[name='applyCapita']").val(data.data.applyCapita);
+                $("#form1" + " input[name='isApply']").val("否");
+                $("#form1" + " .layui-btn").removeClass("layui-btn-disabled");
+                $("#form1" + " .layui-btn").attr("disabled", false);
+                if (data.data.isApply == '1') {
+                    $("#form1" + " input[name='isApply']").val("是");
+                    $("#form1" + " .layui-btn").attr("disabled", true);
+                    $("#form1" + " .layui-btn").addClass("layui-btn-disabled");
+                }
+            })
+        }
+    })
+    //数据表格
+    layui.use('table', function () {
+        var table = layui.table;
+//执行渲染
+        var datatable = table.render({
+            id: "dataTable",
+            elem: '#layui_table_id',//指定原始表格元素选择器（推荐id选择器）
+            url: '/userCompetition/get',//数据接口
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [15, 30, 50, 80, 100],  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 15, //每页默认显示的数量
+            toolbar: '#toolbar',//开启自定义工具行，指向自定义工具栏模板选择器
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'id', title: 'ID', align: 'center'},
+                    {field: 'department', title: '院系', align: 'center'},
+                    {field: 'team', title: '班级', align: 'center'},
+                    {field: 'username', title: '用户名', align: 'center'},
+                    {field: 'realname', title: '真实姓名', align: 'center'},
+                    {field: 'cname', title: '项目名(类别)', align: 'center'},
+                    {field: 'capita', title: '限制人数', align: 'center'},
+
+                    {fixed: 'right', align: 'center', toolbar: '#tool'}  //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+
+        });
+
+
+//监听每行按钮事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                //删除信息
+                case 'del':
+                    console.log(obj.data);
+                    var ids = obj.data.id;
+                    layer.confirm('真的删除  ID  为  <span style="color: red">' + ids + '</span>  的行吗？', function (index) {
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        postResponse("/userCompetition/del", {ids: obj.data.id});
+                    });
+                    break;
+                //编辑信息
+                case 'edit':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "编辑" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['600px', '300px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form")     //报名内容
+                        , success: function (layero, index) {
+                            var text;
+                            $.each(data, function (key, value) {
+                                    $(layero.selector + " input[name=" + key + "]").val(value);
+                            })
+                            $(layero.selector + " input[name=\"username\"]").attr("disabled","disabled");
+                            $.get("/competition/get",{page:0,limit:0},function (data) {
+                                $(layero.selector + " select[name=\"cid\"]").remove("option");
+                                $.each(data.data,function (key,value) {
+                                    text +="<option value="+value.id+">"+value.name+'('+value.kind+')'+"</option>";
+                                })
+                                $(layero.selector + " select[name=\"cid\"]").append(text);
+                                layui.form.render();
+                            })
+                            $(layero.selector + " select[name=\"cid\"] option[value=" + data.cid + "]").attr("selected","selected");
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+//                            $(layero.selector + " input[name='content']").attr("disabled", "disabled")
+//                            $(layero.selector + " input[name='description']").attr("disabled", "disabled")
+                            $(layero.selector).addClass("edit");
+
+                        }
+                        , end: function () {
+                            $("#form").hide();
+                        }
+                    });
+                    layui.form.render();
+                    break;
+            }
+            ;
+        });
+//监听表格头部工具条事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                //添加报名
+                case 'add':
+//                    page("","添加");
+                    layer.closeAll();
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "添加" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['600px', '450px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form1")     //报名内容
+                        , success: function (layero, index) {
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+                            $(layero.selector+" form")[0].reset();
+                            $(layero.selector).addClass("add");
+                            var text = "<option value=''>请选择</option>";;
+                            var usertext = "<option value=''>请选择</option>";;
+
+                            $.get("/competition/get",{page:0,limit:0},function (data) {
+                                $(layero.selector + " select[name=\"cid\"]").remove("option");
+                                $.each(data.data,function (key,value) {
+                                    text +="<option value="+value.id+">"+value.name+'('+value.kind+')'+"</option>";
+                                })
+                                $(layero.selector + " select[name=\"cid\"]").append(text);
+                                layui.form.render();
+                            })
+
+                            $.get("/user/getBase",{page:0,limit:0},function (data) {
+                                $(layero.selector + " select[name=\"uid\"]").remove("option");
+                                $.each(data.data,function (key,value) {
+                                    usertext +="<option value="+value.id+">"+value.username+'('+value.realname+')'+"</option>";
+                                })
+                                $(layero.selector + " select[name=\"uid\"]").append(usertext);
+                                layui.form.render();
+                            })
+                            //TODO
+//                            $(layero.selector + " select[name=\"cid\"] option[value=" + data.cid + "]").attr("selected","selected");
+
+                        }
+                        , end: function () {
+                            $("#form1").hide();
+                            $("#form1 select[name=\"cid\"]").empty();
+                            $("#form1 select[name=\"uid\"]").empty();
+                            $(".layui-layer-shade").remove();
+                            $(".layui-layer-move").remove();
+                        }
+                    });
+                    layui.form.render()
+                    break
+                //批量删除
+                case 'del':
+                    var data = checkStatus.data;
+                    if (data != "") {
+                        var arr = [];
+                        for (var i = 0; i < data.length; i++) { //循环筛选出id
+                            arr.push(data[i].id);
+                        }
+                        var ids = arr.join(',')
+                        layer.confirm('真的删除  ID  为  <span style="color: red">' + ids + '</span>  的行吗？', function (index) {
+                            layer.close(index);
+                            postResponse("/userCompetition/del", {ids: ids});
+                        });
+                    }
+                    else
+                        layer.msg("没有选择数据", {icon: 0})
+                    break;
+            }
+            ;
+        });
+    });
+    //表单提交
+    layui.use('form', function () {
+        var form = layui.form;
+        var edit = '/userCompetition/save';
+        var add = '/userCompetition/add';
+        var updatePass = '/userCompetition/updatePass/id';
+        var select = '/userCompetition/get';
+
+        var reloadUrl;
+        //监听提交
+        form.on('submit(form)', function (obj) {
+            var url, data;
+            if ($(this).parents("div").hasClass("edit")) {
+                url = edit;
+                data = $(".edit form").serialize()
+                console.log(data)
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("updatePass")) {
+                url = updatePass;
+                data = $(".updatePass form").serialize()
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("add")) {
+                url = add;
+                data = $(".add form").serialize()
+                console.log(data)
+                postResponse(url, data);
+            } else if ($(this).parents("div").hasClass("select")) {
+                url = select;
+                data = $(".select form").serialize()
+                data = decodeURIComponent(data, true);//对serialize后的参数值进行一次解码，防止中文乱码
+                console.log(data)
+                getResponse(url, data);
+            } else {
+                layer.msg('非法操作', {icon: 5});
+                return false;
+            }
+            layer.closeAll();
+            return false;
+        });
+
+    });
+
+    function getResponse(url, data) {
+        var reloadUrl = url;
+        layer.msg("操作成功", {icon: 1});
+        //将表单数据构造成json对象
+        var s = "{" + data + "}";
+        s = s.replace(/&/g, ",").replace(/=/g, ":").replace(/:/g, '":"').replace(/,/g, '","').replace(/{/g, '{"').replace(/}/g, '"}');
+        var jsonobj = JSON.parse(s)
+        layui.table.reload('dataTable', {
+            url: reloadUrl,
+            where: jsonobj,
+        });
+    }
+
+    function postResponse(url, data) {
+        $.post(url, data, function (data) {
+            var reloadUrl = "/userCompetition/get"
+            if (Number(data.code) == 0) {
+                layer.msg("操作成功", {icon: 1});
+                layui.table.reload('dataTable', {
+                    url: reloadUrl,
+                });
+            }
+            else {
+                layer.msg(data.msg, {icon: 2})
+            }
+        });
+
+    }
+
+</script>
+

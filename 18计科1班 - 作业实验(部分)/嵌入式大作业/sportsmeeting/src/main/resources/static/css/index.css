@@ -1,0 +1,90 @@
+.box-bg{
+    position: relative;
+
+    background-image: url("../img/loginBg.jpg");
+    /*padding-bottom: 100px;*/
+    height: 100vh;
+}
+.row
+{
+    margin-top: 4em;
+}
+.img-logo
+{
+    min-width: 76px;
+    height: 76px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.logo-text
+{
+    font-size: 35px;
+    color: #ffffff;
+}
+.informbox{
+    position: relative;
+    box-sizing: border-box;
+    /*min-height: 215px;*/
+    padding: 14px;
+    color: #000;
+    background: #fff;
+    box-shadow: 0 4px 3px #888888;
+}
+
+.loginbox h2 , .informbox h2{
+    position: relative;
+    font-size: 18px;
+    color: #22B3C8;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    font-weight:bold;
+}
+.informbox h2 a {
+    position: absolute;
+    font-size: 12px;
+    right: 5px;
+    /* float: right; */
+    color: #22B3C8;
+}
+.inform{
+    padding-left: 10px;
+    color: #636262;
+}
+.loginbox{
+    float: right;
+    width: 310px;
+    height: 50vh;
+    background: #fff;
+    margin-left: 15px;
+    padding: 10px;
+}
+.articlelist li {
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    border-bottom: 1px dashed #ccc;
+}
+.resetPwd{
+    position:absolute;
+    right: 20px;
+}
+.footer-container {
+    position: absolute;
+    border-top: 1px solid #f4f4f4;
+    background-color: #f4f4f4;
+    color: #010101;
+    font-size: 12px;
+    height: 7vh;
+    padding: 2vh;
+    width:100%;
+    bottom: 0;
+}
+.footer-container p{
+    text-align: center;
+}
+.articlelist span
+{
+    font-size: 15px;
+    float: right;
+    color: #636262;
+}

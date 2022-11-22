@@ -1,0 +1,125 @@
+
+.banner{
+    position: relative;
+    padding: 5px;
+    width: 100%;
+    background-image:url("/static/img/banner.jpg");
+    top: 0;
+    /*height: 12vh;*/
+}
+.logo-text
+{
+    font-size: 30px;
+    color: #ffffff;
+    left: 25px;
+    font-weight: bold;
+}
+.img-logo
+{
+    min-width: 76px;
+    height: 76px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.font,.role_name{
+    font-weight: bold;
+    font-size: 16px;
+    padding-top: 10px;
+}
+.bgrole {
+    position: relative;
+    text-align: center;
+    background-color: #e0fcff;
+    font-size: 16px;
+    border-bottom: 1px solid #23b4c9;
+}
+.left-box{
+    /*height: 12vh;*/
+    /*line-height: 12vh;*/
+    /*text-align: center;*/
+}
+.left-box span{
+}
+.center-box{
+    position: relative;
+    width:100%;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+}
+.bannerLeft{
+    position: relative;
+    bottom: 0;
+    background: #f0f9fe;
+    border-right: 1px solid #4cc1d3;
+    font-size: 16px;
+    height: 88vh;
+    /*z-index: 1000;*/
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.bannerRight{
+    position: relative;
+    background: #ffffff;
+    border-right: 1px solid #4cc1d3;
+    top: 0;
+    bottom: 0;
+    height: 88vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#menu a {
+    /*text-align: center;*/
+    text-decoration:none;
+    display: block;
+    color: #666;
+    line-height: 46px;
+    height: 46px;
+    border-left: 3px solid #f0f9fe;
+    position: relative;
+    font-size: 18px;
+}
+#menu ul{
+    display: none;
+}
+#menu ul li a:hover:not(.active),#menu li a:hover:not(.active) .i-icon {
+    background-color: #22b3c8;
+    color: white;
+
+}
+#menu  li
+{
+    border-left: 3px solid #ffffff;
+}
+#menu  li:hover
+{
+    border-left: 3px solid #22b3c8;
+}
+.border-left-color
+{
+    border-left: 3px solid #22b3c8;
+}
+
+#menu ul li a i{
+    font-size: 1px;
+}
+#menu .i-icon{
+    height: 1em;
+    top: 17px;
+    right: 10px;
+    position: absolute;
+}
+#menu .i-icon0
+{
+    color:#22b3c8; ;
+}
+.a-color{
+    background-color: #22b3c8;
+    /*color: #ffffff;*/
+}
+.panel{
+    position: relative;
+    /*height: 81vh;*/
+}
+

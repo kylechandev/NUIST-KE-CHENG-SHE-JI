@@ -1,0 +1,66 @@
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:5vh ">
+    <div class="layui-card-header"><b>导出文档</b></div>
+    <div class="layui-card-body">
+        <div class="row" style="text-align:center;">
+            <a class="layui-btn layui-btn-normal " href="/score/export" >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;导出个人项目excel
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </a>
+        </div>
+    </div>
+</div>
+<div class="layui-card" style="min-height:5vh ">
+    <div class="layui-card-header"><b>导出文档</b></div>
+    <div class="layui-card-body">
+        <div class="row" style="text-align:center;">
+            <a class="layui-btn layui-btn-normal " href="/score/team/export" >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;导出团队项目excel
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </a>
+        </div>
+    </div>
+</div>
+<!--<script>-->
+    <!--var index = layer.load(2, {time: 10*1000});-->
+    <!--var url = "/score/get?page=0&limit=0";-->
+    <!--var head1 = "<div class=\"layui-card\" style=\"min-height:5vh \">" +-->
+        <!--"    <div class=\"layui-card-header\"><b>";-->
+    <!--var head2 ="</b></div>" +-->
+        <!--"    <div class=\"layui-card-body\">" +-->
+        <!--"<table class=\"layui-table\" lay-size=\"sm\">" +-->
+        <!--"            <thead>" + " " +-->
+        <!--"            <tr>" +-->
+        <!--"                <th style='width: 20%'>比赛名称</th>" +-->
+        <!--"                <th style='width: 20%'>人员</th>" +-->
+        <!--"                <th style='width: 20%'>班级</th>" +-->
+        <!--"                <th style='width: 20%'>成绩</th>" +-->
+        <!--"                <th style='width: 20%'>分数</th>" +-->
+        <!--"            </tr>"+-->
+    <!--"            </thead>" +-->
+    <!--"            <tbody>";-->
+    <!--var end = "            </tbody>" +-->
+        <!--"        </table>" +-->
+        <!--"    </div>" +-->
+        <!--"</div>";-->
+    <!--var html=""-->
+    <!--$.get(url, function (data) {-->
+        <!--$.each(data.data, function (key, value) {-->
+            <!--var content="";-->
+            <!--var name = value.name + '(' + value.kind + ')';-->
+            <!--$.each(value.userCompetition,function (key, value) {-->
+                <!--content += "<tr><td>"+name +"</td>"+-->
+                    <!--"<td>"+value.realname +"</td>"+-->
+                    <!--"<td>"+value.team +"</td>"+-->
+                    <!--"<td>"+value.grade +"</td>"+-->
+                    <!--"<td>"+value.score +"</td></tr>";-->
+            <!--})-->
+            <!--html+=head1+name+head2+content+end;-->
+        <!--})-->
+        <!--$(".bannerRight").append(html)-->
+        <!--layer.close(index);-->
+    <!--});-->
+<!--</script>-->
+
+
+

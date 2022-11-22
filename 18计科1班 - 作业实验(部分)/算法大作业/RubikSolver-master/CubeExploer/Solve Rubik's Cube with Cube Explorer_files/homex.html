@@ -1,0 +1,201 @@
+<!-- saved from url=(0039)http://kociemba.org/math/movetables.htm -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>The Move Tables</title>
+
+    <link rel="stylesheet" href="./style.css" type="text/css">
+</head>
+
+<body>
+<table width="800" border="0" cellpadding="20" cellspacing="30" height="2681">
+    <tbody>
+    <tr>
+        <td width="703" valign="top" bgcolor="#E7E9FA">
+            <h1 align="center">The Move Tables</h1>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA" height="119">
+            <p align="left">If you apply one of the 18 possible faceturns (a "move")
+                to the cube, the permutation of the corners and edges change. On the coordinate
+                level, a move maps a coordinate to another coordinate.</p>
+            <p align="left">This mapping is possible, because we can show that if we
+                apply a move M onto two different permutations a and b with the same coordinate
+                x, both results have the same coordinate x'. If a and b have the same
+                coordinate x, and H is the subgroup defining the cosets for this coordinate,
+                there exist a permutation g from the cube group G so that a and b are
+                elements of H*g (remember that we use right cosets). Then a*M and b*M
+                are of course elements from [H*g]*M = H*[g*M] and hence are in the same
+                coset and have the same coordinate x'.</p>
+            <p align="left">Move tables are twodimensional arrays which describe how
+                this mapping is done. We distinguish between move tables for "simple"
+                raw-coordinates and movetables for sym-coordinates, which are reduced
+                by symmetries.</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA" height="545">
+            <h3>Move tables for raw-coordinates</h3>
+            <p align="left">All move tables for raw-coordinates have the same structure.
+                Let us take for example the move table for the corner orientation coordinate:</p>
+            <p align="left">TwistMove: array[0..2187-1,Ux1..Bx3] of Word;</p>
+            <p align="left">If you apply for example the move R2, TwistMove[oldCoordinate,Rx2]
+                gives the new coordinate. This is done pretty fast compared with doing
+                a permutation on the cubie level or the on the facelet level.</p>
+            <p align="left">Here is the documented code from CordCube.pas to generate
+                this move table:</p>
+            <p align="left">procedure CreateTwistMoveTable;<br>
+                var c: CubieCube; i,k: Integer; j: TurnAxis;<br>
+                begin<br>
+                &nbsp;&nbsp;c:= CubieCube.Create;<font color="#0000FF">//create a cube
+                    c on the cubie level</font><br>
+                &nbsp;&nbsp;for i:=0 to 2187-1 do<br>
+                &nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;c.InvCornOriCoord(i);<font color="#0000FF">//generate
+                    a permutation with corner orientation i</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;for j:= U to B do<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for k:= 0 to 3 do <font color="#0000FF">//k=3
+                    restores the original state</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c.Move(j);<font color="#0000FF">//apply
+                    all 18 face turns on c</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if k&lt;&gt;3 then
+                TwistMove[i,Move(3*Ord(j)+k)]:=c.CornOriCoord;<font color="#0000FF">//save
+                    result in the array</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;end;<br>
+                &nbsp;&nbsp;end;<br>
+                &nbsp;&nbsp;c.Free;<br>
+                end;</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA">
+            <h3>Move tables for sym-coordinates</h3>
+            <p>If we reduce a coordinate by symmetries, we only generate a move table
+                for the representants of the equivalence classes. Let R(j) be a permutation
+                belonging to the representant of the equivalence class with index j.</p>
+            <p>When we apply a move M on this representant, the result will be in another
+                equivalence class k, so that there is a symmetry S(i) with R(j)*M = S(i)<sup>-1</sup>*R(k)*S(i).
+                Then the resulting movetable entry is the corresponding sym-coordinate,
+                that is MoveTable[ j,M ]:= 16*k + i .</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA" height="419">
+            <p>Here is an example for the FlipUDSlice move table from cordcube.pas (all
+                unimportant parts removed):</p>
+            <p>procedure CreateFlipUDSliceMoveTable;<br>
+                var c: CubieCube; i,k,n: Integer; j: TurnAxis;<br>
+                begin<br>
+                &nbsp;&nbsp;SetLength(FlipSliceMove,64430,18); <font color="#0000FF">//18
+                    different faceturns</font><br>
+                &nbsp;&nbsp;c:= CubieCube.Create;<br>
+                &nbsp;&nbsp;for i:=0 to 64430-1 do<font color="#0000FF"> //iterate over
+                    all equivalence classes</font><br>
+                &nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;n:= FlipUDSliceToRawFlipUDSlice[i]; <font color="#0000FF">//get
+                    the raw-coordinate of the representant</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;c.InvUDSliceCoord(n div 2048);<font color="#0000FF">
+                    //and generate a permutation which has this FlipUDslice coordinate</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;c.InvEdgeOriCoord(n mod 2048);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;for j:= U to B do<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for k:= 0 to 3 do<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;begin<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c.Move(j); <font color="#0000FF">//apply
+                    all 18 faceturns</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if k&lt;&gt;3 then FlipSliceMove[i,3*Ord(j)+k]:=
+                c.FlipUDSliceCoord; <font color="#0000FF">//the sym-coordinate</font><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;end;<br>
+                &nbsp;&nbsp;end;<br>
+                end;</p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA" height="170">
+            <p>The procedure to find the sym-coordinate for a given permutation P is
+                not really difficult but a bit more complicated than the computation of
+                the raw-coordinates. We only need this procedure in the initialization
+                phase where we have to calculate the coordinates of the cube we want to
+                solve. </p>
+            <p>For 0&lt;=i&lt;16 we apply S(i)*P*S(i)<sup>-1</sup> and compute the raw-coordinate
+                until we find the raw-coordinate in the ClassIndexToRepresentantArray
+                at some position k. Let us denote this coordinate with R(k).</p>
+            <p>S(i)*P*S(i)<sup>-1</sup> = R(k) is equivalent to S(i)<sup>-1</sup>*R(k)*S(i)
+                = P, and this means P has the sym-coordinate 16*k + i.</p>
+            <p>Look at the function CubieCube.FlipUDSliceCoord in cubicube.pas for an
+                example. </p>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" bgcolor="#E7E9FA" height="651">
+            <p>Applying a move also is more complicated for sym-coordinates compared
+                to raw-coordinates, because we only have built a movetable for the representants
+                of the equivalence classes. But the advantage of using sym-coordinates
+                - reducing the big tables by a factor of about 16 - is much higher than
+                the disadvantage due to the increased complexity.</p>
+            <p>If we have the sym-coordinate x, we can extract from this coordinate
+                the index j of the equivalence class and the index i of the symmetry.
+                For a move M we have, using the associativity of the permutation group
+                and denoting the representant of the equivalence class with R(j):</p>
+            <p><font color="#0000FF">[</font>S(i)<sup>-1</sup>*R(j) *S(i)<font color="#0000FF">]</font>*M
+                =<font color="#0000FF"> [</font>S(i)<sup>-1</sup>*R(j)*S(i)<font color="#0000FF">]</font>*M*<font
+                        color="#0000FF">[</font>S(i)<sup>-1</sup>*S(i)<font color="#0000FF">]</font>
+                =<font color="#0000FF"> [</font>S(i)<sup>-1</sup>*R(j)<font color="#0000FF">]</font>*<font
+                        color="#0000FF">[</font>S(i)*M*S(i)<sup>-1</sup><font color="#0000FF">]</font>*S(i)</p>
+            <p><font color="#0000FF">[</font>S(i)*M*S(i)<sup>-1</sup><font color="#0000FF">]</font>
+                is the conjugation of a move by a symmetry which is another move. In symmetry.pas
+                the array SymMove[SymIdx,Move] is initialized, so that SymMove[i,M] gives
+                the desired result. Let us denote the result by M<sub>1.</sub></p>
+            <p>So we have to compute</p>
+            <p><font color="#0000FF"> [</font>S(i)<sup>-1</sup>*R(j)<font color="#0000FF">]</font>*
+                M<sub>1</sub>*S(i) = S(i)<sup>-1</sup>*<font color="#0000FF">[</font>R(j)*
+                M<sub>1</sub><font color="#0000FF">]</font>*S(i)</p>
+            <p>The sym-coordinate y for<font color="#0000FF"> [</font>R(j)* M<sub>1</sub><font color="#0000FF">]</font>
+                can be read off from MoveTable[j, M<sub>1</sub>]. From y we then extract
+                the class index j<sub>1</sub> and the symmetry index i<sub>1</sub>. That
+                means <font color="#0000FF">[</font>R(j)*M<sub>1</sub><font color="#0000FF">]</font>
+                = S( i<sub>1</sub>)<sup>-1</sup>*R(j<sub>1</sub>)*S( i<sub>1</sub>).</p>
+            <p>So we have</p>
+            <p> S(i)<sup>-1</sup>*<font color="#0000FF">[</font>R(j)* M<sub>1</sub><font color="#0000FF">]</font>*S(i)
+                = S(i)<sup>-1</sup>*<font color="#0000FF">[</font> S( i<sub>1</sub>)<sup>-1</sup>*R(j<sub>1</sub>)*S(
+                i<sub>1</sub>)<font color="#0000FF">]</font>*S(i) =<font color="#0000FF">
+                    [</font>S(i)<sup>-1</sup>*S( i<sub>1</sub>)<sup>-1</sup><font
+                        color="#0000FF">]</font>*R(j<sub>1</sub>)*<font color="#0000FF">[</font>S(
+                i<sub>1</sub>)*S(i)<font color="#0000FF">]<font color="#000000"></font></font></p>
+            <p><font color="#000000">and because </font><font color="#0000FF">[</font>S(i)<sup>-1</sup>*S(
+                i<sub>1</sub>)<sup>-1</sup><font color="#0000FF">]</font> = <font color="#0000FF"><font color="#000000"><font
+                        color="#0000FF">[</font>S(
+                    i<sub>1</sub>)*S(i)<font color="#0000FF">]</font><sup>-1</sup> we can
+                    write this as</font></font></p>
+            <p><font color="#0000FF"><font color="#000000"><font color="#0000FF">[</font>S(
+                i<sub>1</sub>)*S(i)<font color="#0000FF">]</font><sup>-1</sup>*R(j<sub>1</sub>)*<font
+                        color="#0000FF">[</font>S(
+                i<sub>1</sub>*S(i)<font color="#0000FF">]<font color="#000000">.</font></font></font></font></p>
+            <p><font color="#0000FF"><font color="#000000"><font color="#0000FF">[</font>S(
+                i<sub>1</sub>)*S(i)<font color="#0000FF">]</font></font></font> is the
+                product of two symmetries, which is another symmetry <font color="#0000FF"><font
+                        color="#000000">S(i<sub>2</sub>).
+                    The array SymMult[SymIdx,SymIdx] - created in symmetries.pas - does this
+                    computation. Let us denote</font> <font color="#000000">SymMult[</font><font color="#0000FF"><font
+                        color="#000000">i<sub>1</sub>,i]
+                    with i<sub>2</sub>. So our result is</font></font></font></p>
+            <p><font color="#0000FF"><font color="#000000">S(i2)<sup>-1</sup>*R(j<sub>1</sub>)*S(
+                i<sub>2</sub>) and the corresponding sym-coordinate is 16*</font><font color="#0000FF"><font
+                    color="#000000">j<sub>1</sub>+</font><font color="#0000FF"><font color="#000000">
+                i<sub>2</sub></font></font>.</font></font></p>
+            <p>So in comparison with the movetables for raw-coordinates where we only
+                need one table-lookup we now need three table-lookups in the tables SymMove,
+                MoveTable and SymMult.</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+</body>
+</html>
