@@ -1,0 +1,107 @@
+<div class="layui-card">
+    <div class="layui-card-header"><b>个人信息</b></div>
+    <div class="layui-card-body">
+        <div id="form">
+            <form class="" style="padding: 30px">
+                <div class="row">
+                    <input class="form-control" type="text" name="id" placeholder="id" readonly="readonly"
+                           style="display: none;">
+                    <div class="form-group col-md-6">
+                        <label>用户名<span style="color: red">*</span></label>
+                        <input class="form-control" type="text" name="username" placeholder="请输入用户名" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>真实姓名<span style="color: red">*</span></label>
+                        <input class="form-control" type="text" name="realname" placeholder="" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>手机号</label>
+                        <input class="form-control" type="text" name="phone" placeholder="" autocomplete="off">
+                    </div>
+
+                    <div class="form-group col-md-6 ">
+                        <label>邮箱</label>
+                        <input class="form-control" type="text" name="email" placeholder="" autocomplete="off">
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>系别</label>
+                        <input class="form-control" type="text" name="department" placeholder="" disabled
+                               autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-6 ">
+                        <label>班级</label>
+                        <input class="form-control" type="text" name="team" placeholder="" autocomplete="off" disabled>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label>入校时间</label>
+                        <input class="form-control" type="text" name="startSchoolYear" placeholder="" disabled
+                               autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-6 ">
+                        <label>离校时间</label>
+                        <input class="form-control" type="text" name="leaveSchoolYear" placeholder="" disabled
+                               autocomplete="off">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6 ">
+                        <label>性别</label><br>
+                        <label>男
+                            <input class="" id="man" type="radio" name="sex" value="0" checked>
+                        </label>&nbsp;&nbsp;&nbsp;
+                        <label>女
+                            <input class="" id="woman" type="radio" name="sex" value="1">
+                        </label>
+                    </div>
+                </div>
+                <div class="row" style="text-align:center;">
+                    <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var id = "[[${session.id}]]";
+    $.get("/user/get/ById", {id: id}, function (data) {
+        console.log(data)
+        $.each(data.data, function (key, value) {
+
+            if (key == 'sex') {
+                $("form input[value=" + value + "]").attr("checked", "checked");
+            }
+            else {
+                $("form" + " input[name=" + key + "]").val(value);
+            }
+        })
+        $("form" + " input[name='username']").attr("disabled", true);
+        $("form" + " input[name='realname']").attr("disabled", true);
+    })
+    layui.use('form', function () {
+        var form = layui.form;
+        form.on('submit(form)', function (obj) {
+            var data = $("form").serialize();
+            console.log(data)
+            $.post("/user/save", data, function (data) {
+                if (Number(data.code) == 0) {
+                    $("#content").load('/page/grxxwh');
+                    layer.msg("操作成功", {icon: 1});
+                }
+                else {
+                    layer.msg(data.msg, {icon: 2})
+                }
+            })
+            return false;
+        })
+    })
+</script>

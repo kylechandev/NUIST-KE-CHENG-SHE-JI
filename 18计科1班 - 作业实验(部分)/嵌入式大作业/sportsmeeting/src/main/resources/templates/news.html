@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>高校运动会管理系统</title>
+    <meta name="description" content="基于Web的高校运动会管理系统">
+    <meta name="keywords" content="毕业设计,运动会,HTML,CSS,XML,JavaScript">
+    <meta name="author" content="fanhaiteng">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/vendor/layui-v2.5.5/css/layui.css" media="all">
+    <script src="/static/vendor/layui-v2.5.5/layui.all.js"></script>
+    <script src="/static/vendor/jquery/jquery-3.4.1.min.js"></script>
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <style>
+        body {
+            font-size: 16px;
+            padding: 0px;
+            margin: 0px;
+            overflow-x: hidden;
+        }
+
+        .head {
+            position: relative;
+            padding: 20px;
+            width: 100%;
+            background-image: url("/static/img/banner.jpg");
+            top: 0;
+            height: 10%;
+        }
+
+        .head img {
+            height: 5%;
+            width: 5%;
+        }
+
+        .head .logo-text {
+            font-size: 30px;
+            color: #ffffff;
+            left: 25px;
+            font-weight: bold;
+        }
+
+        .mid {
+            padding: 20px 0px 20px 0;
+        }
+
+        .mid .leftbox {
+            /*float: left;*/
+            padding-bottom: 110px;
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+        }
+
+        .mid .leftbox h3 {
+            font-weight: 400;
+            font-size: 14px;
+            padding: 22px 0px 16px 31px;
+            border-bottom: 1px solid #e7e7e7;
+            cursor: pointer;
+        }
+
+        .mid .leftbox .every {
+            display: block;
+            color: #666666;
+            height: 39px;
+            overflow: hidden;
+            padding-left: 31px;
+            line-height: 39px;
+            margin: 14px 0;
+            background-color: #f5f5f5;
+            border-left: 3px solid #f5f5f5;
+        }
+
+        .mid .leftbox .sign {
+            background-color: #ededed;
+            /*border-left: 3px solid #22B3C8;*/
+            color: #22B3C8;
+        }
+
+        .mid .rightbox {
+            box-sizing: border-box;
+            min-height: 215px;
+            padding: 14px;
+            color: #000;
+            margin-bottom: 10px;
+            background: #fff;
+            box-shadow: 0 1px 1px #888888;
+        }
+
+        .mid .rightbox li {
+            height: 30px;
+            line-height: 30px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .mid .rightbox {
+            border: 1px solid #f2f2f2;
+        }
+
+        .mid .rightbox h2 {
+            position: relative;
+            font-size: 18px;
+            color: #22B3C8;
+            font-weight: bold;
+        }
+
+        .mid .rightbox #bt {
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .mid .rightbox ul span {
+            font-size: 15px;
+            float: right;
+            color: #636262
+        }
+
+        .footer {
+            position: relative;
+            width: 100%;
+            bottom: 0;
+            border-top: 1px solid #f4f4f4;
+            background-color: #f4f4f4;
+            color: #010101;
+            font-size: 12px;
+            height: 10vh;
+            text-align: center;
+            padding: 2vh;
+        }
+    </style>
+</head>
+
+<body>
+<!--头部导航行div-->
+<div class="container-fluid head ">
+    <div class="col-md-12   left-box">
+        <span><img src="/static/img/logo.png" class="img-logo" alt="Responsive image"><span
+                class="logo-text">高校运动会管理系统</span></span>
+    </div>
+</div>
+<!--中间大盒子-->
+<div class="container-fluid  mid ">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-2 ">
+            <div class="leftbox">
+                <h3 class=""><i class="fa fa-home fa-fw"></i> <a id="login" href="/">返回首页</a></h3>
+                <ul id="ulNoticeType" class="NLmenu">
+                    <li><a class="every sign" href="/news" title="通告类型"><i class="fa fa-newspaper-o fa-fw"></i>&nbsp;&nbsp;公告通知</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="rightbox ">
+                <div id="bt"><h2>公告</h2></div>
+                <ul id="news" class=" articlelist list-unstyled clearfix">
+                    无
+                </ul>
+                <div id="page"></div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+<!--下底部大盒子-->
+<div class="container-fluid  footer ">
+
+</div>
+<script>
+
+</script>
+<script>
+    var id = getQueryVariable("id")
+    //如果查询到id
+    if(id){
+        loadNews(id)
+        console.log("间接3页面")
+    }
+    else {
+        console.log("执行初始页面")
+        $.get("/news/get", {'page': 1, 'limit': 5}, function (obj) {
+            var data = obj.data;
+            var html = "";
+            $.each(data, function (key, value) {
+                var li = "<li><i class=\"fa  fa-angle-double-right\"></i>&nbsp;" +
+                    "<a class=\"inform\" href='javascript:void(0)' onclick='loadNews(" + value.id + ")'  title=\"" + value.title + "\" >" + value.title + "</a>" +
+                    "<span class=\"time\">" + value.createTime + "</span></li>\n"
+                html += li;
+            })
+            $("#news").html(html)
+            layui.use('laypage', function () {
+                var laypage = layui.laypage;
+                laypage.render({
+                    elem: 'page'
+                    , count: obj.count
+                    , limit: 5
+                    , theme: '#1E9FFF'
+                    , jump: function (obj, first) {
+                        //obj包含了当前分页的所有参数，比如：
+                        getNews(obj.curr, obj.limit)
+                        //首次不执行
+                        if (!first) {
+                            //do something
+                        }
+                    }
+                });
+            });
+        })
+    }
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+    function getNews(page, limit) {
+        $.get("/news/get", {'page': page, 'limit': limit}, function (obj) {
+            var data = obj.data;
+            var html = "";
+            $.each(data, function (key, value) {
+                var li = "<li><i class=\"fa  fa-angle-double-right\"></i>&nbsp;" +
+                    "<a class=\"inform\"  href='javascript:void(0)' onclick='loadNews(" + value.id + ")'  title=\"" + value.title + "\" >" + value.title + "</a>" +
+                    "<span class=\"time\">" + value.createTime + "</span></li>\n"
+                html += li;
+            })
+            $("#news").html(html)
+        })
+    }
+
+    function loadNews(id) {
+        $.get("/news/getById?id=" + id, function (obj) {
+            var data = obj.data
+            var title = data.title
+            var time = "<br><p style='color: #7d7d7d;'>" + data.createTime + "&nbsp;&nbsp;&nbsp;&nbsp;最后一次编辑时间：" + data.updateTime + "</p>"
+            var content = data.content
+
+            $("#bt h2").html(title)
+            $("#bt").append(time)
+            $("#news").html(content)
+            $("#page").remove()
+        })
+    }
+</script>
+</body>
+
+</html>

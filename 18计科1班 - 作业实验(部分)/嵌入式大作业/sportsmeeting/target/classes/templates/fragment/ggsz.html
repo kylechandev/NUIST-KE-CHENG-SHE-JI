@@ -1,0 +1,282 @@
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>公告设置</b></div>
+    <div class="layui-card-body">
+        <table id="layui_table_id" lay-filter="test">
+            <!--头部工具栏-->
+            <script type="text/html" id="toolbar">
+                <div class="layui-btn-container" style="z-index: 1">
+                    <div class="layui-btn-group">
+                        <button class="layui-btn  layui-btn-warm layui-btn-sm" lay-event="add">&nbsp;&nbsp;添加文章&nbsp;&nbsp;</button>
+                        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">批量删除</button>
+                        <a class="layui-btn layui-btn-normal layui-btn-sm" href="/news">预览</a>
+                    </div>
+                </div>
+            </script>
+            <!--行内工具栏-->
+            <script type="text/html" id="tool">
+                <div class="layui-btn-container">
+                    <a class="layui-btn  layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger  layui-btn-xs" lay-event="del">删除</a>
+                </div>
+            </script>
+        </table>
+    </div>
+</div>
+<!--隐藏编辑框-->
+<div id="form" class="center-block" style="display: none;">
+    <form class="" style="padding: 30px">
+        <!--<input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">-->
+        <input class="form-control" type="hidden" name="id" placeholder="" autocomplete="off">
+        <div class="form-group col-md-12 ">
+            <label>标题<span style="color: red">*</span></label>
+            <input class="form-control" type="text" name="title" placeholder="" autocomplete="off">
+        </div>
+        <div class="form-group col-md-12 ">
+            <label>内容<span style="color: red">*</span></label>
+            <!-- 加载编辑器的容器 -->
+            <div id="editor" name="content" type="text/plain"  style="width: 100%"></div>
+        </div>
+
+        <br>
+        <div class="row" style="text-align:center;">
+            <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+        </div>
+    </form>
+</div>
+<!-- 实例化编辑器 -->
+<!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+<script type="text/javascript" src="/static/vendor/wangeditor/wangEditor.js"></script>
+<script type="text/javascript">
+    var E = wangEditor
+    var editor = new E('#editor')
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = '/uploadImg'
+    // 将图片大小限制为 3M
+    editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024
+    // 限制一次最多上传 5 张图片
+    editor.customConfig.uploadImgMaxLength = 5
+    // 将 timeout 时间改为 3s
+    editor.customConfig.uploadImgTimeout = 3000
+    // 通过 url 参数配置 debug 模式。url 中带有 wangeditor_debug_mode=1 才会开启 debug 模式
+    editor.customConfig.debug = true
+    editor.customConfig.uploadFileName = 'file'
+    editor.create()
+
+</script>
+<script>
+    //数据表格
+    layui.use('table', function () {
+        var table = layui.table;
+//执行渲染
+        var datatable = table.render({
+            id: "dataTable",
+            elem: '#layui_table_id',//指定原始表格元素选择器（推荐id选择器）
+            url: '/news/get',//数据接口
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [15, 30, 50, 80, 100],  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 15, //每页默认显示的数量
+            toolbar: '#toolbar',//开启自定义工具行，指向自定义工具栏模板选择器
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'id', title: 'ID', align: 'center'},
+                    {field: 'title', title: '标题', align: 'center'},
+                    {field: 'content', title: '文章内容', align: 'center'},
+                    {field: 'createTime', title: '创建时间', align: 'center'},
+                    {field: 'updateTime', title: '最后一次修改时间', align: 'center'},
+                    {fixed: 'right', align: 'center', toolbar: '#tool'}  //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+
+        });
+//监听每行按钮事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                //删除信息
+                case 'del':
+                    console.log(obj.data);
+                    var ids = obj.data.id;
+                    layer.confirm('真的删除  ID  为  <span style="color: red">' + ids + '</span>  的行吗？', function (index) {
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        postResponse("/news/del", {ids: obj.data.id});
+                    });
+                    break;
+                //编辑信息
+                case 'edit':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "编辑" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['50%', '60%'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form")     //报名内容
+                        , success: function (layero, index) {
+                            var text;
+                            $.each(data, function (key, value) {
+                                $(layero.selector + " input[name=" + key + "]").val(value);
+                            })
+                            editor.txt.html(data.content)
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+                            $(layero.selector).addClass("edit");
+                        }
+                        , end: function () {
+                            $("#form").hide();
+                            $.each(data, function (key, value) {
+                                $("#form" + " input[name=" + key + "]").val("");
+                            })
+                            editor.txt.html("")
+                        }
+                    });
+                    layui.form.render();
+                    break;
+            }
+            ;
+        });
+//监听表格头部工具条事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var id="";
+            switch (obj.event) {
+                //添加报名
+                case 'add':
+//                    page("","添加");
+                    layer.closeAll();
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "添加" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['50%', '60%'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form")     //报名内容
+                        , success: function (layero, index) {
+                            id = layero.selector;
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+                            $(layero.selector).addClass("add");
+
+                        }
+                        , end: function () {
+                            $("#form").hide();
+                            $("input[name='title']").val("");
+                            editor.txt.html("")
+                        }
+                    });
+                    layui.form.render()
+                    break
+                //批量删除
+                case 'del':
+                    var data = checkStatus.data;
+                    if (data != "") {
+                        var arr = [];
+                        for (var i = 0; i < data.length; i++) { //循环筛选出id
+                            arr.push(data[i].id);
+                        }
+                        var ids = arr.join(',')
+                        layer.confirm('真的删除  ID  为  <span style="color: red">' + ids + '</span>  的行吗？', function (index) {
+                            layer.close(index);
+                            postResponse("/news/del", {ids: ids});
+                        });
+                    }
+                    else
+                        layer.msg("没有选择数据", {icon: 0})
+                    break;
+            }
+            ;
+        });
+    });
+    //表单提交
+    layui.use('form', function () {
+        var form = layui.form;
+        var edit = '/news/save';
+        var add = '/news/add';
+        var updatePass = '/news/updatePass/id';
+        var select = '/news/get';
+
+        var reloadUrl;
+        //监听提交
+        form.on('submit(form)', function (obj) {
+            var url, data;
+
+            if ($(this).parents("div").hasClass("edit")) {
+                url = edit;
+                data = $(".edit form").serialize()
+//                data = data.replace(/content=[^&]*/g,"content="+editor.txt.html())
+                data=data.concat(encodeURI("&content="+editor.txt.html()))
+                console.log(data)
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("updatePass")) {
+                url = updatePass;
+                data = $(".updatePass form").serialize()
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("add")) {
+                url = add;
+                data = $(".add form").serialize()
+                data=data.concat(encodeURI("&content="+editor.txt.html()))
+                console.log(data)
+                postResponse(url, data);
+            } else if ($(this).parents("div").hasClass("select")) {
+                url = select;
+                data = $(".select form").serialize()
+                data = decodeURIComponent(data, true);//对serialize后的参数值进行一次解码，防止中文乱码
+                console.log(data)
+                getResponse(url, data);
+            } else {
+                layer.msg('非法操作', {icon: 5});
+                return false;
+            }
+            layer.closeAll();
+            return false;
+        });
+
+    });
+
+    function getResponse(url, data) {
+        var reloadUrl = url;
+        layer.msg("操作成功", {icon: 1});
+        //将表单数据构造成json对象
+        var s = "{" + data + "}";
+        s = s.replace(/&/g, ",").replace(/=/g, ":").replace(/:/g, '":"').replace(/,/g, '","').replace(/{/g, '{"').replace(/}/g, '"}');
+        var jsonobj = JSON.parse(s)
+        layui.table.reload('dataTable', {
+            url: reloadUrl,
+            where: jsonobj,
+        });
+    }
+
+    function postResponse(url, data) {
+        $.post(url, data, function (data) {
+            var reloadUrl = "/news/get"
+            if (Number(data.code) == 0) {
+                layer.msg("操作成功", {icon: 1});
+                layui.table.reload('dataTable', {
+                    url: reloadUrl,
+                });
+            }
+            else {
+                layer.msg(data.msg, {icon: 2})
+            }
+        });
+
+    }
+
+</script>

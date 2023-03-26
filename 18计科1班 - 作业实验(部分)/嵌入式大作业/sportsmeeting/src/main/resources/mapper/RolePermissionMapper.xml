@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.RolePermissionMapper">
+  <resultMap id="BaseResultMap" type="com.fht.entity.RolePermission">
+    <id column="permission_id" jdbcType="INTEGER" property="permissionId" />
+    <id column="role_id" jdbcType="INTEGER" property="roleId" />
+  </resultMap>
+  <!--********************************************删除操作********************************************-->
+  <delete id="deleteByRoleId" parameterType="java.lang.Integer">
+    delete from role_permission
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </delete>
+  <delete id="batchDelete">
+    DELETE FROM `role_permission` where `id` in
+    <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <!--********************************************插入操作********************************************-->
+  <insert id="insert" parameterType="com.fht.entity.RolePermission">
+    insert into role_permission (permission_id, role_id)
+    values (#{permissionId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER})
+  </insert>
+  <insert id="batchInsert" parameterType="com.fht.entity.Role">
+    insert ignore  into role_permission (permission_id, role_id)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      <trim prefix=" (" suffix=")" suffixOverrides="," >
+        #{item.permissionId,jdbcType=INTEGER}, #{item.roleId,jdbcType=INTEGER}
+      </trim>
+    </foreach>
+  </insert>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select permission_id, role_id
+    from role_permission
+  </select>
+  <!--*******************************************查询操作********************************************-->
+  <select id="selectPermission" resultMap="BaseResultMap">
+    select rp.role_id,group_concat(rp.permission_id) as permissionId,group_concat(p.content) as content ,group_concat(p.description) as description
+    from role_permission rp
+    left join permission p on rp.permission_id = p.id
+    where rp.role_id = #{id} GROUP BY rp.role_id limit 1
+  </select>
+  <select id="getByRoleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select permission_id, role_id
+    from role_permission
+    where role_id = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

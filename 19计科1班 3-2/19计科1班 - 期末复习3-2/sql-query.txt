@@ -1,0 +1,201 @@
+select * from Course;
+select * from StuCourse;
+
+select 课程号,课程名 from Course where 学分=5;
+select 学号,课程号 from StuCourse where 成绩>80;
+
+select 学号,姓名 from Student where 姓名 like '%红%';
+
+select
+distinct Student.学号,姓名 
+from StuCourse,Student 
+where(课程号='1002'or 课程号='2001')and StuCourse.学号=Student.学号;
+
+select 学号,姓名
+from Student 
+where 学号
+in(select distinct 学号 from StuCourse where 课程号='1002'or 课程号='2001');
+
+select 
+Student.学号,Student.姓名  
+from Student,Course,StuCourse 
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.学号 and Student.专业名='计算机科学与技术' and StuCourse.课程号='1001' and StuCourse.成绩
+	> all(select StuCourse.成绩 from StuCourse where Student.专业名	='电子信息工程' and StuCourse.课程号='1001');
+	
+select Student.*,Course.* from Student,Course,StuCourse 
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.学号;
+
+select Student.姓名,Course.* from Student,Course,StuCourse 
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.	学号 and Student.专业名='计算机科学与技术';
+
+select 
+MAX(成绩) as '最高成绩',MIN(成绩) as '最低成绩' 
+from Student,Course,StuCourse
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.学号 and Student.专业名='计算机科学与技术';
+
+select 
+Student.学号,Student.姓名,AVG(成绩) as '平均成绩' 
+from Student,Course,StuCourse
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.学号 and Student.专业名='计算机科学与技术' 
+group by Student.学号,Student.姓名;
+
+select 
+平均成绩.专业名,
+COUNT(*) as 学生人数 
+from(
+select Student.学号,Student.专业名,AVG(成绩) as '平均成绩' ,count(*) as '学生人数' from Student,Course,StuCourse
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.学号
+group by Student.学号,Student.专业名
+having AVG(成绩)>=80
+)平均成绩 
+group by 平均成绩.专业名;
+
+select 
+Student.学号,Student.姓名,AVG(成绩) as '平均成绩' 
+from Student,Course,StuCourse
+where Course.课程号=StuCourse.课程号 and StuCourse.学号=Student.	学号
+group by Student.学号,Student.姓名
+order by 平均成绩 desc;
+
+select * from StuCourse;
+
+select 
+姓名,year(getdate())-year(出生年月) as 年龄 
+from Student 
+where 专业名='计算机科学与技术';
+
+select 
+Student.学号,Course.课程号,成绩 
+from Student,StuCourse,Course 
+where Student.学号=StuCourse.学号 and StuCourse.课程号 = Course.课程号 and 成绩 between 70 and 80;
+
+select MAX(成绩) as '最高分' from StuCourse where 课程号='1001';
+
+select 
+max(year(getdate())-year(出生年月)) as 最大年龄,MIN(year(getdate())-year(出生年月)) as 最小年龄 
+from Student 
+where 专业名='计算机科学与技术';
+
+select 
+Student.专业名,COUNT(专业名) as '学生人数' 
+from Student
+group by Student.专业名;
+
+select 
+distinct Course.课程名,COUNT(课程名)as '选课人数',max(成绩) as '最高成绩' 
+from Course,StuCourse
+where Course.课程号=StuCourse.课程号
+group by Course.课程名;
+
+select Student.学号,count(课程名) as '选课门数',sum(成绩) as '考试	总成绩'
+from StuCourse,Student,Course
+where Student.学号=StuCourse.学号 and Course.课程号=StuCourse.课程号
+group by Student.学号
+order by 选课门数 asc;
+
+
+select Student.学号,sum(成绩) as '总成绩' 
+from StuCourse,Student,Course
+where Student.学号=StuCourse.学号 and Course.课程号=StuCourse.课程号
+group by Student.学号
+having SUM(成绩)>=270;
+
+select 姓名,专业名 
+from Student
+where 学号 in(select 学号 from StuCourse where 课程号='1002');
+
+select Student.姓名,Course.课程号,成绩 
+from StuCourse,Student,Course
+where Student.学号=StuCourse.学号 and Course.课程号=StuCourse.课程号 and 成绩>=80
+order by 成绩 desc;
+
+select 课程名,开课日期 
+from Course
+where 开课日期 IN (select 开课日期 from Course where 课程名='高等数学');
+
+select 
+姓名,专业名,datepart(yy,出生年月) as 出生年份 
+from Student 
+where datepart(yy,出生年月)=datepart(yy,(select 出生年月 from Student where 姓名='丁一平'));
+
+select 课程号,课程名 
+from Course 
+where 课程号 not in (select distinct 课程号 from Student,StuCourse where Student.学号=StuCourse.学号);
+
+select 
+Student.学号,Student.姓名,StuCourse.课程号
+from Student 
+left join StuCourse on Student.学号 =StuCourse.学号;
+
+select * from Student where Student.学号 not in
+(select 学号 from StuCourse ) and Student.专业名='计算机科学与技术';
+
+select 
+top 3 姓名, 出生年月 
+from Student 
+where 专业名='计算机科学与技术'
+order by 出生年月 asc;
+
+select 
+top 3 Student.学号,Student.姓名,StuCourse.成绩 
+from Student,StuCourse,Course
+where Student.学号=StuCourse.学号 and Course.课程号=StuCourse.课程号 and 课程名='高等数学'
+order by 成绩 desc;
+
+select 
+top 2 Student.学号,count(课程名) as '选课门数' 
+from StuCourse,Student,Course
+where Student.学号=StuCourse.学号 and Course.课程号=StuCourse.课程号
+group by Student.学号
+order by 选课门数 desc;
+
+select 
+Student.姓名,Student.专业名 
+from Student 
+where 学号 in (select 学号 from Course where 课程号='1001');
+
+select 
+Student.学号,Student.姓名 
+from Student
+where 学号 in (select 学号 from StuCourse where 成绩>=80 )and 专业名='电子信息工程';
+
+select Student.姓名
+from Student
+where Student.学号 in (select top 1 StuCourse.学号 from StuCourse,Student 
+where Student.学号=StuCourse.学号 and 专业名='计算机科学与技术'order by 成绩 desc);
+
+select 
+姓名,专业名,year(getdate())-year(出生年月)as 年龄 
+from Student 
+where datepart(yy,出生年月)= (select min(datepart(yy,出生年月)) as 出生年份 from Student where 性别='男');
+
+select distinct Student.学号,成绩 from Student,StuCourse
+where Student.学号=StuCourse.学号 and StuCourse.课程号='1001' and StuCourse.成绩 > 
+(select avg(成绩) as '平均成绩' from StuCourse,Course 
+where StuCourse.课程号=Course.课程号 and Course.课程号='1001' group by Course.课程号);
+
+
+select 
+Student.姓名,StuCourse.课程号,成绩 
+from Student,StuCourse
+where Student.学号=StuCourse.学号 and Student.专业名='计算机科学与技术' and StuCourse.成绩 > 
+(select AVG(成绩) as '平均成绩' from StuCourse,Course,Student
+where StuCourse.课程号=Course.课程号 and Student.学号=StuCourse.学号 and 专业名 ='计算机科学与技术');
+
+select 
+姓名,专业名 
+from Student
+where  not EXISTS  (select * from StuCourse a, Course b
+where Student. 学号=a. 学号 AND a.课程号=b.课程号 AND 课程名= '电路基础');
+
+select 
+开课日期,课程名,学分 
+from Course
+where 学分 in(select MAX(学分) as '最高学分' from Course);
+
+select 
+distinct Course.课程名,Course.课程号,COUNT(课程名)as '选课人数',选课情况=
+case when COUNT(课程名) <100 and COUNT(课程名)>40 then '一般'
+		 when COUNT(课程名)<39 and COUNT(课程名)>1 then '人少' else '无人选' end
+from Course left join  StuCourse on Course.课程号=StuCourse.课程号
+group by Course.课程名,Course.课程号;

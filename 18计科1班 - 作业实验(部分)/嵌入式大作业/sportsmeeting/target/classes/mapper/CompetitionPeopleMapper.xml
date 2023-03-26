@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.CompetitionPeopleMapper">
+  <resultMap id="BaseResultMap" type="com.fht.entity.CompetitionPeople">
+    <result column="competitionName"  property="competitionName" />
+    <result column="people" property="people" />
+  </resultMap>
+  <resultMap id="TeamPeopleList" type="com.fht.entity.CompetitionTeamPeople">
+    <id column="id" jdbcType="INTEGER" property="cid"/>
+    <result column="competitionName"  property="competitionName" />
+    <collection column="id" property="teamPeople" ofType="com.fht.entity.CompetitionTeamPeople" javaType="ArrayList"
+                select="com.fht.dao.CompetitionPeopleMapper.getTeamPeopleByCid">
+
+    </collection>
+  </resultMap>
+
+  <!--********************************************查询操作********************************************-->
+  <select id="getAll" resultMap="BaseResultMap">
+    select CONCAT(c.`name`,'(',c.kind,')')as competitionName,GROUP_CONCAT(u.realname) as people from competition c
+    left join user_competition uc on c.id = uc.cid
+    left join `user` u on u.id = uc.uid where c.isTeam=0
+    GROUP BY c.`id`
+  </select>
+  <select id="getAllTeamPeople" resultMap="TeamPeopleList">
+      select id,CONCAT(c.`name`,'(',c.kind,')') as competitionName from competition c where c.isTeam=1
+  </select>
+
+  <select id="getTeamPeopleByCid" resultType="com.fht.entity.TeamPeople">
+        select u.team as team,GROUP_CONCAT(u.realname) as people
+        from user_competition uc
+		inner join user u on  uc.uid =u.id
+		inner join competition c on  uc.cid =c.id
+		where c.id = #{id}
+		GROUP BY u.team
+  </select>
+
+</mapper>

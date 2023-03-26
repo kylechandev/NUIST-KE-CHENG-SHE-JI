@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <link rel="icon" href="res/favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="res/favicon.ico" type="image/x-icon"/>
+    <title>魔方求解器</title>
+    <link rel="stylesheet/less" type="text/css" href="index.less"/>
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/less.js/3.10.3/less.min.js"></script>
+    <!--<script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>-->
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+</head>
+<body>
+<!--main组件-->
+<div id="main">
+    <div class="view" ref="view">
+        <face :n="n" :colors="faceColors[0]" :size="size"></face>
+        <div class="mid">
+            <face :n="n" :colors="faceColors[1]" :size="size"></face>
+            <face :n="n" :colors="faceColors[2]" :size="size"></face>
+            <face :n="n" :colors="faceColors[3]" :size="size"></face>
+        </div>
+        <face :n="n" :colors="faceColors[4]" :size="size"></face>
+        <face :n="n" :colors="faceColors[5]" :size="size"></face>
+        <!--toast消息-->
+        <div id="toast" v-if="toast.message">
+            <div class="box" :style="{color:toast.color}">{{toast.message}}</div>
+        </div>
+    </div>
+    <div class="input">
+        <div class=control>
+            <select v-model="n" @change="changeCellSize">
+                <option :value="2">二阶魔方</option>
+                <option :value="3">三阶魔方</option>
+            </select>
+            <button @click="colors=''">清空</button>
+        </div>
+        <textarea :placeholder="`输入魔方${6*n*n}个面的颜色`" v-model="colors"></textarea>
+    </div>
+</div>
+<!--face组件-->
+<div id="face" hidden>
+    <div class="face">
+        <div v-for="x in n" :key="x">
+            <div v-for="y in n" :key="y"
+                 :style="{backgroundColor: colors[(x-1)*n+y-1],width:size+'px',height:size+'px'}" class="cell">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    const number2color = ['white', 'green', 'red', 'blue', 'yellow', 'orange']
+    const char2color = {}
+    for (var c of number2color) {
+        char2color[c[0]] = c
+    }
+
+    const components = {
+        face: {
+            props: {
+                n: {
+                    type: Number,
+                    required: true
+                },
+                colors: {
+                    type: Array,
+                    required: true
+                },
+                size: {
+                    type: Number,
+                    required: true
+                }
+            },
+            template: "#face"//把template写在html中，并且使用hidden属性，这种方式是最好的
+        }
+    }
+    for (var componentName in components) {
+        var com = components[componentName]
+        com.template = document.querySelector(com.template).innerHTML
+        Vue.component(componentName, com)
+    }
+    var main = {
+        data() {
+            return {
+                n: 2,//n阶魔方
+                colors: "",//颜色列表
+                size: 0,//每个颜色小正方形的高度
+                toast: {//toast的三个作用，警告，通知，答案
+                    message: "",
+                    color: "white"
+                },
+            }
+        },
+        mounted() {
+            window.onresize = this.changeCellSize
+            window.onload = this.changeCellSize
+            this.$nextTick(() => {
+                this.changeCellSize()
+            })
+        },
+        computed: {
+            should() {
+                //红心白发蓝右臂
+                return [
+                    {x: 0, y: this.n * this.n - 1, color: 'white'},
+                    {x: 2, y: this.n - 1, color: 'red'},
+                    {x: 3, y: 0, color: 'blue'}
+                ]
+            },
+            validColors() {
+                return this.colors.replace(/[^wgrbyo]/g, '')
+            },
+            faceColors() {
+                //把字符串转成颜色
+                var validColors = this.validColors
+                var faces = []
+                for (var i = 0; i < 6; i++) {
+                    var face = []
+                    for (var j = 0; j < this.n * this.n; j++) {
+                        face.push('grey')
+                    }
+                    faces.push(face)
+                }
+                for (var faceInd = 0; faceInd < 6; faceInd++) {
+                    for (var i = 0; i < this.n; i++) {
+                        for (var j = 0; j < this.n; j++) {
+                            var pos = i * this.n + j
+                            var colorIndex = faceInd * this.n * this.n + pos
+                            if (colorIndex >= validColors.length) break
+                            faces[faceInd][pos] = char2color [validColors[colorIndex]]
+                        }
+                    }
+                }
+                //如果是灰色，则显示成目标颜色
+                for (var i of this.should) {
+                    if (faces[i.x][i.y] === 'grey') {
+                        faces[i.x][i.y] = i.color
+                    }
+                }
+                return faces
+            },
+            colorsAndN() {//用于watch两个东西
+                var {colors, n} = this
+                return {colors, n}
+            }
+        },
+        watch: {
+            colorsAndN() {
+                //当颜色发生改变时，对颜色进行校验
+                if (this.validColors.length > 6 * this.n * this.n) {
+                    this.showToast(`颜色个数超过了${6 * this.n * this.n}个`, 'red')
+                    return
+                }
+                for (var i of this.should) {
+                    var j = i.x * this.n * this.n + i.y
+                    if (this.validColors.length > j && this.validColors[j] !== i.color[0]) {
+                        this.showToast("红心白发蓝右臂", 'red')
+                        return
+                    }
+                }
+                if (this.validColors.length >= 6 * this.n * this.n) {
+                    this.get("/api/solve", {
+                        params: {
+                            n: this.n,
+                            q: this.validColors,
+                        }
+                    }).then(resp => {
+                        this.showToast(resp.data, 'green')
+                    }).catch(err => {
+                        this.showToast("求解失败，可能是状态错误", 'red')
+                    })
+                }
+                this.toast.message = ""
+            }
+        },
+        methods: {
+            changeCellSize() {
+                //跟据view的宽度和高度，自动调整每个颜色面正方形的边长
+                var rect = this.$refs.view.getBoundingClientRect()
+                var faceBorderWidth = 2 * 4//每个小面之间应该有一定间隙
+                this.size = Math.min(
+                    (rect.width - faceBorderWidth) / 3 / this.n,
+                    (rect.height - faceBorderWidth) / 4 / this.n)
+            },
+            showToast(message, color) {
+                this.toast.message = message
+                this.toast.color = color ? 'red' : color
+            },
+            get(url,...args) {
+                const appName = "/RubikSolver/"
+                if (url.startsWith("/api/") && location.pathname.startsWith(appName)) {
+                    url = `${appName}${url.slice(1)}`
+                }
+                return axios.get(url, ...args)
+            }
+        }
+    }
+    var haha = null
+    document.onreadystatechange = () => {
+        if (document.readyState !== 'complete') return
+        main.el = "#main"
+        haha = new Vue(main)
+    }
+</script>
+</html>

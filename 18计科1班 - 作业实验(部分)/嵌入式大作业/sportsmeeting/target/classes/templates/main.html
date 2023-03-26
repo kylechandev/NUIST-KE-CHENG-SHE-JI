@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:replace="common/common_header :: common_header(~{::title},~{::link},~{},~{::script})">
+    <meta charset="UTF-8">
+    <title>高校运动会管理系统</title>
+    <!--个性样式-->
+    <link rel="stylesheet" href="../static/css/main.css">
+    <script src="../static/js/main-menu.js"></script>
+</head>
+<body>
+<!--头部导航行div-->
+<div  class="container-fluid banner ">
+        <div class="col-md-6  left-box">
+            <span><img src="../static/img/logo.png"  class="img-logo" alt="Responsive image"><span class="logo-text">高校运动会管理系统</span></span>
+        </div>
+    <div class="col-md-4"> </div>
+        <div class=" col-md-2  right-box" >
+            <i class="fa fa-user fa-fw font" style="left: 65px;"></i>&nbsp;<span class="role_name" th:text="'欢迎您，'+${session.realName}"></span>
+            <a href="/logout" class="center-block btn btn-info btn-block">退出登录</a>
+        </div>
+</div>
+<!--中间大盒子-->
+<div class="container-fluid center-box ">
+    <div  class="row">
+        <!--左边盒子-->
+    <div class="bannerLeft  col-lg-2" style="padding-right: 0px;padding-left: 0px;">
+        <div class="bgrole center-block"><i class="fa fa-user fa-fw font" style="left: 65px;"></i>&nbsp;<span class="role_name">[[${session.roles}]]</span></div>
+        <!--<a href="javascript:;" class="navIcon navOpen">收起导航</a>-->
+        <ul id="menu">
+            <li><a class="parent-a" href="javascript:void(0)"><i class="fa fa-home fa-fw i-icon0"></i>&nbsp;&nbsp;首页管理&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="ggsz" ><a onclick="jumpPage('/page/ggsz')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;公告设置</a></li>
+                    <li shiro:hasPermission="ydhgl" ><a onclick="jumpPage('/page/ydhgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;运动会管理</a></li>
+                </ul>
+            </li>
+            <li><a class="parent-a" href="javascript:void(0)"><i class="fa fa-cog fa-fw  i-icon0"></i>&nbsp;&nbsp;用户管理&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="zhgl" ><a onclick="jumpPage('/page/zhgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;账号管理</a></li>
+                    <li shiro:hasPermission="jsgl"><a onclick="jumpPage('/page/jsgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;角色管理</a></li>
+                    <li shiro:hasPermission="qxgl"><a onclick="jumpPage('/page/qxgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;权限管理</a></li>
+                </ul>
+            </li>
+            <li><a class="parent-a" href="javascript:void(0)"><i class="fa fa-cog fa-fw  i-icon0"></i>&nbsp;&nbsp;项目与报名管理&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="xmbp"><a onclick="jumpPage('/page/xmbp')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;项目编排与管理</a></li>
+                    <li shiro:hasPermission="xmbm"><a onclick="jumpPage('/page/xmbm')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;项目报名</a></li>
+                    <li shiro:hasPermission="ckybmxm"><a onclick="jumpPage('/page/ckybmxm')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;查看已报名项目</a></li>
+                    <li shiro:hasPermission="bmgl"><a onclick="jumpPage('/page/bmgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;报名管理</a></li>
+                    <li shiro:hasPermission="bbdc"><a onclick="jumpPage('/page/bbdc')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;报表导出</a></li>
+                </ul>
+            </li>
+            <li><a class="parent-a" href="javascript:void(0)"><i class="fa fa-cog fa-fw  i-icon0"></i>&nbsp;&nbsp;成绩与过程管理&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="grcjgl"><a onclick="jumpPage('/page/grcjgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;个人成绩管理</a></li>
+                    <li shiro:hasPermission="tdcjgl"><a onclick="jumpPage('/page/tdcjgl')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;团队成绩管理</a></li>
+                    <li shiro:hasPermission="ckssjc"><a onclick="jumpPage('/page/ckssjc')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;查看赛事进程</a></li>
+                </ul>
+            </li>
+            <li><a class="parent-a" href="javascript:void(0)"><i class="fa fa-cog fa-fw  i-icon0"></i>&nbsp;&nbsp;信息统计管理&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="xmcjtj"><a onclick="jumpPage('/page/xmcjtj')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;项目成绩统计</a></li>
+                    <li shiro:hasPermission="ckgrcj"><a onclick="jumpPage('/page/ckgrcj')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;查看个人成绩</a></li>
+                    <li ><a onclick="jumpPage('/page/grcjcx')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;个人成绩查询</a></li>
+                    <li ><a onclick="jumpPage('/page/tdcjcx')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;团队成绩查询</a></li>
+
+                </ul>
+            </li>
+            <li><a class="parent-a" href="javascript:void(0)" ><i class="fa fa-cog fa-fw  i-icon0"></i>&nbsp;&nbsp;个人信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw i-icon"></i></a>
+                <ul>
+                    <li shiro:hasPermission="grxxwh"><a onclick="jumpPage('/page/grxxwh')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw "></i>&nbsp;个人信息维护</a></li>
+                    <li shiro:hasPermission="xgmm"><a onclick="jumpPage('/page/xgmm')" class="li-a" href="javascript:void(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-star fa-fw"></i>&nbsp;修改密码</a></li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+    <!--右边盒子-->
+    <div  id="content" class="bannerRight col-md-10 center-block  " style="padding: 20px;background-color: #F2F2F2;" >
+
+        <!--数据表格面板-->
+        <div class="layui-card" style="min-height:70vh ;">
+            <div class="layui-card-header"><b></b></div>
+            <div class="layui-card-body">
+                <div class="row" style="text-align:center;">
+                    <h1>欢迎来到
+                        <font color="red">[[${session.currentSession}]]！！！</font>
+                    </h1>
+                    <h1>请选择左侧功能菜单！！</h1>
+                    <IMG src="/static/img/main.jpg" alt="图片无法显示">
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</div>
+</div>
+</div>
+<script>
+    function jumpPage(url) {
+        $("#content").load(url);
+}
+</script>
+</body>
+
+</html>

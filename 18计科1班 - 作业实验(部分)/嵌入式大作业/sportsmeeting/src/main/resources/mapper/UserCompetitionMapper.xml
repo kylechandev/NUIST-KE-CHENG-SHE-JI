@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.UserCompetitionMapper">
+    <resultMap id="BaseResultMap" type="com.fht.entity.UserCompetition">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="uid" jdbcType="INTEGER" property="uid"/>
+        <result column="cid" jdbcType="INTEGER" property="cid"/>
+        <result column="score" jdbcType="INTEGER" property="score"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="username" jdbcType="CHAR" property="username"/>
+        <result column="realname" jdbcType="CHAR" property="realname"/>
+        <result column="team" jdbcType="CHAR" property="team"/>
+        <result column="cname" jdbcType="CHAR" property="cname"/>
+        <result column="applyCapita" jdbcType="CHAR" property="applyCapita"/>
+        <result column="isApply" jdbcType="CHAR" property="isApply"/>
+        <result column="capita" jdbcType="CHAR" property="capita"/>
+        <result column="department" jdbcType="CHAR" property="department"/>
+    </resultMap>
+    <!--********************************************删除操作********************************************-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_competition
+    where id = #{id,jdbcType=INTEGER} and sessionid=#{currentSessionId}
+  </delete>
+    <delete id="batchDeleteByUid">
+        DELETE FROM `user_competition` where `uid` in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and sessionid=#{currentSessionId}
+    </delete>
+    <delete id="batchDelete">
+        DELETE FROM `user_competition` where `id` in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and sessionid=#{currentSessionId}
+    </delete>
+    <!--********************************************添加操作********************************************-->
+    <insert id="insert" parameterType="com.fht.entity.UserCompetition">
+    insert into user_competition (id, `uid`, cid,
+      score,sessionid)
+    values (#{record.id,jdbcType=INTEGER}, #{record.uid,jdbcType=INTEGER}, #{record.cid,jdbcType=INTEGER},
+      #{record.score,jdbcType=INTEGER},#{currentSessionId})
+  </insert>
+    <!--********************************************更新操作********************************************-->
+
+    <update id="updateByPrimaryKey" parameterType="com.fht.entity.UserCompetition">
+        update user_competition
+        <set>
+            <if test="record.uid!=null and record.uid!='' ">
+                `uid` = #{record.uid,jdbcType=INTEGER},
+            </if>
+            <if test="record.cid!=null and record.cid!='' ">
+                cid = #{record.cid,jdbcType=INTEGER},
+            </if>
+            grade = #{record.grade,jdbcType=VARCHAR},
+            score = #{record.score,jdbcType=INTEGER}
+        </set>
+
+        where id = #{record.id,jdbcType=INTEGER} and sessionid=#{currentSessionId}
+    </update>
+    <!--********************************************查询操作********************************************-->
+    <!--*通用查询*-->
+    <select id="selectAllExtension" resultMap="BaseResultMap">
+        select uc.*,u.username as username,u.realname as realname ,CONCAT(c.`name`,'(',c.kind,')') as
+        cname,c.capita,u.team as team,u.department as department
+        from user_competition uc
+        inner join user u on uc.uid =u.id
+        inner join competition c on uc.cid =c.id
+        <where>
+            <if test="userCompetition.username!=null and userCompetition.username!='' ">
+                and binary username like CONCAT('%',#{userCompetition.username},'%')
+            </if>
+            <if test="userCompetition.realname!=null and userCompetition.realname!='' ">
+                and binary realname like CONCAT('%',#{userCompetition.realname},'%')
+            </if>
+            <if test="userCompetition.cname!=null and userCompetition.cname!=''">
+                and binary c.name like CONCAT('%',#{userCompetition.cname},'%')
+            </if>
+            <if test="userCompetition.ckind!=null and userCompetition.ckind!=''">
+                and binary c.kind like CONCAT('%',#{userCompetition.ckind},'%')
+            </if>
+            <if test="userCompetition.team!=null and userCompetition.team!=''">
+                and binary u.team like CONCAT('%',#{userCompetition.team},'%')
+            </if>
+            <if test="userCompetition.department!=null and userCompetition.department!=''">
+                and binary u.department like CONCAT('%',#{userCompetition.department},'%')
+            </if>
+            and uc.sessionid=#{currentSessionId}
+        </where>
+    </select>
+
+    <!--*团队项目成绩查询*-->
+    <select id="getAllWithTeamInfo" resultMap="BaseResultMap">
+        select uc.*,u.username as username,u.realname as realname ,CONCAT(c.`name`,'(',c.kind,')') as
+        cname,c.capita,u.team as team,u.department as department
+        from user_competition uc
+        inner join user u on uc.uid =u.id
+        inner join competition c on uc.cid =c.id
+        <where>
+            <if test="userCompetition.team!=null and userCompetition.team!='' ">
+                and binary team like CONCAT('%',#{userCompetition.team},'%')
+            </if>
+            <if test="userCompetition.cname!=null and userCompetition.cname!=''">
+                and binary c.name like CONCAT('%',#{userCompetition.cname},'%')
+            </if>
+            <if test="userCompetition.ckind!=null and userCompetition.ckind!=''">
+                and binary c.kind like CONCAT('%',#{userCompetition.ckind},'%')
+            </if>
+            <if test="userCompetition.team!=null and userCompetition.team!=''">
+                and binary u.team like CONCAT('%',#{userCompetition.team},'%')
+            </if>
+            <if test="userCompetition.department!=null and userCompetition.department!=''">
+                and binary u.department like CONCAT('%',#{userCompetition.department},'%')
+            </if>
+            and c.isTeam=1 and uc.sessionid=#{currentSessionId} order by uc.score desc
+
+        </where>
+    </select>
+
+    <!--*个人项目成绩查询*-->
+    <select id="getAllWithPersonalInfo" resultMap="BaseResultMap">
+        select uc.*,u.username as username,u.realname as realname ,CONCAT(c.`name`,'(',c.kind,')') as
+        cname,c.capita,u.team as team,u.department as department
+        from user_competition uc
+        inner join user u on uc.uid =u.id
+        inner join competition c on uc.cid =c.id
+        <where>
+            <if test="userCompetition.username!=null and userCompetition.username!='' ">
+                and binary username like CONCAT('%',#{userCompetition.username},'%')
+            </if>
+            <if test="userCompetition.realname!=null and userCompetition.realname!='' ">
+                and binary realname like CONCAT('%',#{userCompetition.realname},'%')
+            </if>
+            <if test="userCompetition.cname!=null and userCompetition.cname!=''">
+                and binary c.name like CONCAT('%',#{userCompetition.cname},'%')
+            </if>
+            <if test="userCompetition.ckind!=null and userCompetition.ckind!=''">
+                and binary c.kind like CONCAT('%',#{userCompetition.ckind},'%')
+            </if>
+            <if test="userCompetition.team!=null and userCompetition.team!=''">
+                and binary u.team like CONCAT('%',#{userCompetition.team},'%')
+            </if>
+            <if test="userCompetition.department!=null and userCompetition.department!=''">
+                and binary u.department like CONCAT('%',#{userCompetition.department},'%')
+            </if>
+            and c.isTeam=0 and uc.sessionid=#{currentSessionId} order by uc.score desc
+        </where>
+    </select>
+
+    <select id="getApplyCapita" resultMap="BaseResultMap">
+    select count(0) as applyCapita  from user_competition uc
+    where uc.cid =#{userCompetition.cid}  and uc.sessionid=#{currentSessionId}
+  </select>
+    <select id="getIsApply" resultMap="BaseResultMap">
+    select count(0) as isApply  from user_competition uc
+    where uc.uid =#{userCompetition.uid} and uc.cid =#{userCompetition.cid}  and uc.sessionid=#{currentSessionId}
+  </select>
+
+    <select id="getAllByUid" resultMap="BaseResultMap">
+        select uc.*,u.username as username,u.realname as realname ,CONCAT(c.`name`,'(',c.kind,')') as
+        cname,c.capita,u.department as department
+        from user_competition uc
+        inner join user u on uc.uid =u.id
+        inner join competition c on uc.cid =c.id
+        <where>
+            and u.id = #{userCompetition.uid}
+            <if test="userCompetition.cname!=null and userCompetition.cname!=''">
+                and binary c.name like CONCAT('%',#{userCompetition.cname},'%')
+            </if>
+            <if test="userCompetition.ckind!=null and userCompetition.ckind!=''">
+                and binary c.kind like CONCAT('%',#{userCompetition.ckind},'%')
+            </if>
+            and uc.sessionid=#{currentSessionId}
+        </where>
+    </select>
+
+    <!--********************************************传入参数是简单类型查询操作********************************************-->
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, `uid`, cid, score,capita,grade
+    from user_competition
+    where id = #{id,jdbcType=INTEGER} and uc.sessionid=#{currentSessionId}
+  </select>
+    <!--*团队项目成绩查询*-->
+    <select id="getIdByTeamNameAndCid" resultType="String">
+      select GROUP_CONCAT(uc.id)
+      from user_competition uc
+      inner join user u on  uc.uid =u.id
+      inner join competition c on  uc.cid =c.id
+      where u.team=#{teamname} and uc.cid=#{cid}  and uc.sessionid=#{currentSessionId}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, `uid`, cid, score,capita,grade
+    from user_competition  and uc.sessionid=#{currentSessionId}
+  </select>
+    <select id="getScoreRankByCid" resultMap="BaseResultMap">
+        SELECT * from user_competition uc
+        inner join user u on uc.uid =u.id
+        inner join competition c on uc.cid =c.id
+        <where>
+            <if test="cid!=null and cid!=''">
+                and binary uc.cid =#{cid}
+            </if>
+            and uc.sessionid=#{currentSessionId}
+        </where>
+        ORDER BY uc.score desc
+    </select>
+</mapper>

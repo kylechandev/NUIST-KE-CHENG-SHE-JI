@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title,links,styles,script)">
+    <meta charset="utf-8">
+    <title th:replace="${title}">The awesome application</title>
+
+    <!--全局通用框架样式 begin-->
+    <meta name="description" content="基于Web的高校运动会管理系统">
+    <meta name="keywords" content="毕业设计,运动会,HTML,CSS,XML,JavaScript">
+    <meta name="author" content="fanhaiteng"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/vendor/layui-v2.5.5/css/layui.css" media="all">
+    <script src="/static/vendor/layui-v2.5.5/layui.all.js"></script>
+    <!--<include file="/static/js/common.js"></include>-->
+    <script src="/static/vendor/jquery/jquery-3.4.1.min.js"></script>
+    <script src="/static/vendor/bootstrap-3.3.7/js/bootstrap.js"></script>
+    <!--全局通用框架样式 end-->
+    <!--/* Per-page placeholder for additional links */-->
+    <th:block th:replace="${links}" />
+    <!--/* Per-page placeholder for additional styles */-->
+    <th:block th:replace="${styles}" />
+    <th:block th:replace="${script}" />
+
+</head>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.SessionDao">
+
+    <resultMap type="com.fht.entity.Session" id="SessionMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SessionMap">
+        select
+          id, content, description, status
+        from sports_meeting.session
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAll" resultMap="SessionMap">
+        select
+          id, content, description, status
+        from sports_meeting.session
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAllByCondition" resultMap="SessionMap">
+        select
+          id, content, description, status
+        from sports_meeting.session
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into sports_meeting.session(content, description, status)
+        values (#{content}, #{description}, #{status})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sports_meeting.session
+        <set>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--修改数据运动届数全部为0-->
+    <update id="initSession">
+        update sports_meeting.session
+        set status = 0
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from sports_meeting.session where id = #{id}
+    </delete>
+
+</mapper>

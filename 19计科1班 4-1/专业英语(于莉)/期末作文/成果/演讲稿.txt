@@ -1,0 +1,17 @@
+1、Android System
+Android is a free and open source operating system based on the Linux kernel led and developed by Google and the Open Handset Alliance. Mainly used in mobile devices, such as smartphones and tablet computers, it has been widely used so far, expanding applications such as TVs, smart watches, and in-vehicle systems. Google has released the source code of Android under the authorization of the Apache open source license. The first Android smartphone was released in October 2008。
+
+2、Android Version
+After 15 years of development, a total of 13 major versions of the Android operating system have been released, and the newly developed Android 14 system is expected to be released in mid-2023. 
+
+3、Android Dev Language
+The long-term development language of Android has been Java, but at the 2019 I/O conference, Google officially announced Kotlin-First, Kotlin has become the language of choice for Android development. Kotlin has the advantages of being safer and more concise than Java, and has a very It has a lot of syntactic sugar and has the title of "Swift in the Android world".
+
+4、Architecture
+The important system architecture of Android is the application layer, application framework layer, system runtime library, hardware abstraction layer, and Linux kernel layer. As developers, most of us are in the role of application layer development. The four major application components developed by Android are Activity (indicates page display), Service (indicates background service, does not provide interface), and BroadcastReceiver (used to receive broadcast events) , Content Provider (used to access data across applications).
+
+5、Android Dev
+The four major application components developed by Android are Activity (the main function is to display pages), Service (represents background services, provides the ability for applications to perform tasks in the background, and does not provide interface functions), and BroadcastReceiver (used to receive broadcast events, such as System power notification and broadcast by the application itself), Content Provider (used to access data across applications, providing cross-process capabilities, equivalent to a database).
+
+6、Android Dev IDE
+The IDE used for Android development is Android Studio, ...

@@ -1,0 +1,82 @@
+编写代码，对实验一中的图像进行直方图均衡化。
+
+
+for (i = 0; i < lHeight; i ++)
+
+{
+
+for (j = 0; j < lWidth; j ++)
+
+{
+
+  lpSrc = (unsigned char *)lpDIBBits + lLineBytes * i + j;
+
+  lCount[*(lpSrc)]++; // 计数加 1
+
+}
+
+}// 统计原设计图像的各级灰度值
+
+// 计算灰度映射关系
+
+for (i = 0; i < 256; i++)
+
+{
+
+ lTemp = 0; // 初始为 0
+
+ for (j = 0; j <= i ; j++)
+
+{
+
+  lTemp += lCount[j];
+
+}
+
+
+
+ bMap[i] = (BYTE) (lTemp * 255 / lHeight / lWidth); // 计算对应的新灰度值
+
+}
+
+
+
+for(i = 0; i < lHeight; i++)// 每行
+
+{
+
+  for(j = 0; j < lWidth; j++)// 每列
+
+{
+
+  // 指向 DIB 第 i 行第 j 个象素的指针
+
+  lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - i) + j;
+
+  // 保存新的灰度值
+
+  *lpSrc = bMap[*lpSrc];}
+
+}
+
+
+
+// 使用函数histeq（）进行直方图均衡化处理 
+
+I=imread('tire.tif'); J=histeq(I);  // 直方图均衡化 
+
+figure, subplot(121),imshow(uint8(I)); 
+
+title('原图') 
+
+subplot(122),imshow(uint8(J)); 
+
+title('均衡化后')
+
+ figure, subplot(121),imhist(I,64); 
+
+title('原图像直方图'); 
+
+subplot(122),imhist(J,64);
+
+ title('均衡化后的直方图');

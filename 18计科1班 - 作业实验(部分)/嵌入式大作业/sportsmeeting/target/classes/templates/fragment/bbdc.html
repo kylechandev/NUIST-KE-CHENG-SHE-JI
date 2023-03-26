@@ -1,0 +1,293 @@
+
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>参赛人员表</b></div>
+    <div class="layui-card-body">
+        <div class="row" style="text-align:center;">
+            <a class="layui-btn layui-btn-normal " href="/peopleWord/export" >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;导出Word
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </a>
+        </div>
+        <label>个人项目人员名单</label>
+        <table id="layui_table_id" lay-filter="test">
+        </table>
+        <label>团队项目人员名单</label>
+        <table id="layui_table_id1" lay-filter="test">
+        </table>
+    </div>
+</div>
+<!--数据表格面板-->
+<div class="layui-card" style="min-height:70vh ">
+    <div class="layui-card-header"><b>比赛日程表</b></div>
+    <div class="layui-card-body">
+        <div class="row" style="text-align:center;">
+            <a class="layui-btn layui-btn-normal " href="/competitionWord/export" >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;导出Word
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </a>
+        </div>
+        <table id="layui_table_id0" lay-filter="test">
+            <!--&lt;!&ndash;行内工具栏&ndash;&gt;-->
+            <!--<script type="text/html" id="tool">-->
+            <!--<div class="layui-btn-container">-->
+            <!--<a class="layui-btn  layui-btn-xs" lay-event="edit">编辑</a>-->
+            <!--</div>-->
+            <!--</script>-->
+        </table>
+    </div>
+</div>
+<!--隐藏编辑框-->
+<div id="form" class="center-block" style="display: none;">
+    <form class="" style="padding: 30px">
+        <input class="form-control" type="text" name="id" placeholder="id" readonly="readonly" style="display: none;">
+        <div class="row center-block">
+            <div class="form-group col-md-6">
+                <label>用户名<span style="color: red">*</span></label>
+                <input class="form-control" type="hidden" name="uid" placeholder="" autocomplete="off"  >
+                <input class="form-control" type="text" name="username" placeholder="请输入用户名" autocomplete="off" disabled="disabled" >
+                <!--<label class="layui-form-label">搜索选择框</label>-->
+            </div>
+            <div class="form-group col-md-6 ">
+                <label>项目名<span style="color: red">*</span></label>
+                <div class="layui-form layui-input-inline">
+                    <select  name="cid" lay-verify="required" lay-search="">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row" style="text-align:center;">
+            <button class="layui-btn " lay-submit lay-filter="form">立即提交</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#time'
+            , type: 'datetime'
+        });
+    });
+</script>
+<!--角色-->
+<script type="text/html" id="teamPeople">
+    {{#  if(d.teamPeople !=null ){ }}
+    {{#  layui.each(d.teamPeople, function(index, item){ }}
+        <span>{{ item.team }}：</span>
+        <span>{{ item.people }}</span>&nbsp;&nbsp;
+    {{#  }); }}
+    {{#  } else { }}
+    <span><strong>无</strong></span>
+    {{#  } }}
+</script>
+
+<script>
+
+    var uid ="[[${session.id}]]"
+    var url = "/peopleList/get";
+    layui.use('table', function () {
+        var table = layui.table;
+//执行渲染
+        var datatable = table.render({
+            id: "dataTable0",
+            elem: '#layui_table_id0',//指定原始表格元素选择器（推荐id选择器）
+            url: "/competition/getByTimeAsc",//数据接口
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [5,15, 30, 50, 80, 100],  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 5, //每页默认显示的数量
+            toolbar: '#toolbar',//开启自定义工具行，指向自定义工具栏模板选择器
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'id', title: 'ID', align: 'center'},
+                    {field: 'name', title: '项目名', align: 'center'},
+                    {field: 'site', title: '地点', align: 'center'},
+                    {field: 'time', title: '时间', align: 'center'},
+                    {field: 'kind', title: '种类', align: 'center'},
+                    {field: 'capita', title: '限制人数', align: 'center'},
+                    {field: 'description', title: '描述', align: 'center'},
+//                    {fixed: 'right', align: 'center', toolbar: '#tool'}  //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+
+        });
+        //执行渲染
+        var datatable1 = table.render({
+            id: "dataTable0",
+            elem: '#layui_table_id1',//指定原始表格元素选择器（推荐id选择器）
+            url: "/teamPeopleList/get",//数据接口
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [5,15, 30, 50, 80, 100],  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 5, //每页默认显示的数量
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'cid', title: '项目id', align: 'center'},
+                    {field: 'competitionName', title: '项目名', align: 'center'},
+                    {field: "teamPeople", title: '团队人员', align: 'left', templet: '#teamPeople'},
+
+//                    {fixed: 'right', align: 'center', toolbar: '#tool'}  //这里的toolbar值是模板元素的选择器
+                ]
+            ]
+
+        });
+        var datatable0 = table.render({
+            id: "dataTable",
+            elem: '#layui_table_id',//指定原始表格元素选择器（推荐id选择器）
+            url: url,//数据接口
+            page: true, //开启分页
+            skin: 'line ', //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+            cellMinWidth: 80,
+            even: true,    //隔行换色
+            limits: [5,15, 30, 50, 80, 100],  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]。
+            limit: 5, //每页默认显示的数量
+            defaultToolbar: [],
+            cols: [
+                [
+                    {type: 'checkbox'}, //开启多选框
+                    {field: 'competitionName', title: '用户名', align: 'center'},
+//                    {field: 'uid', title: 'uid', align: 'center'},
+//                    {field: 'cid', title: 'cid', align: 'center'},
+//                    {field: 'score', title: 'score', align: 'center'},
+                    {field: 'people', title: '用户名', align: 'center'},
+                ]
+            ]
+
+        });
+
+
+//监听每行按钮事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                //编辑信息
+                case 'edit':
+                    layer.open({
+                        type: 1 //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                        , title: "编辑" //标题
+                        , skin: "layui-layer-molv"   //layui-layer-lan:蓝色，layui-layer-molv：墨绿色，默认灰色
+                        , area: ['600px', '300px'] //宽度、高度
+                        , shade: 0.3
+                        , offset: 'auto'
+                        , anim: 1 //弹出动画
+                        , shadeClose: true //弹框出现后，允许点击其它地方关闭
+                        , maxmin: true //允许最大化
+                        , content: $("#form")     //报名内容
+                        , success: function (layero, index) {
+                            var text;
+                            $.each(data, function (key, value) {
+                                    $(layero.selector + " input[name=" + key + "]").val(value);
+                            })
+                            $(layero.selector + " input[name=\"username\"]").attr("disabled","disabled");
+                            $.get("/competition/get",{page:0,limit:0},function (data) {
+                                $(layero.selector + " select[name=\"cid\"]").remove("option");
+                                $.each(data.data,function (key,value) {
+                                    text +="<option value="+value.id+">"+value.name+'('+value.kind+')'+"</option>";
+                                })
+                                $(layero.selector + " select[name=\"cid\"]").append(text);
+                                layui.form.render();
+                            })
+                            $(layero.selector + " select[name=\"cid\"] option[value=" + data.cid + "]").attr("selected","selected");
+                            //移动遮罩层
+                            var mask = $(".layui-layer-shade");
+                            mask.appendTo(layero.parent());
+//                            $(layero.selector + " input[name='content']").attr("disabled", "disabled")
+//                            $(layero.selector + " input[name='description']").attr("disabled", "disabled")
+                            $(layero.selector).addClass("edit");
+
+                        }
+                        , end: function () {
+                            $("#form").hide();
+                        }
+                    });
+                    layui.form.render();
+                    break;
+            }
+            ;
+        });
+    });
+    //表单提交
+    layui.use('form', function () {
+        var form = layui.form;
+        var edit = '/userCompetition/save';
+        var add = '/userCompetition/add';
+        var updatePass = '/userCompetition/updatePass/id';
+        var select = '/userCompetition/get';
+
+        var reloadUrl;
+        //监听提交
+        form.on('submit(form)', function (obj) {
+            var url, data;
+            if ($(this).parents("div").hasClass("edit")) {
+                url = edit;
+                data = $(".edit form").serialize()
+                console.log(data)
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("updatePass")) {
+                url = updatePass;
+                data = $(".updatePass form").serialize()
+                postResponse(url, data);
+            }
+            else if ($(this).parents("div").hasClass("add")) {
+                url = add;
+                data = $(".add form").serialize()
+                postResponse(url, data);
+            } else if ($(this).parents("div").hasClass("select")) {
+                url = select;
+                data = $(".select form").serialize()
+                data = decodeURIComponent(data, true);//对serialize后的参数值进行一次解码，防止中文乱码
+                console.log(data)
+                getResponse(url, data);
+            } else {
+                layer.msg('非法操作', {icon: 5});
+                return false;
+            }
+            layer.closeAll();
+            return false;
+        });
+
+    });
+
+    function getResponse(url, data) {
+        var reloadUrl = url;
+        layer.msg("操作成功", {icon: 1});
+        //将表单数据构造成json对象
+        var s = "{" + data + "}";
+        s = s.replace(/&/g, ",").replace(/=/g, ":").replace(/:/g, '":"').replace(/,/g, '","').replace(/{/g, '{"').replace(/}/g, '"}');
+        var jsonobj = JSON.parse(s)
+        layui.table.reload('dataTable', {
+            url: reloadUrl,
+            where: jsonobj,
+        });
+    }
+
+    function postResponse(url, data) {
+        $.post(url, data, function (data) {
+            var reloadUrl = "/userCompetition/get"
+            if (Number(data.code) == 0) {
+                layer.msg("操作成功", {icon: 1});
+                layui.table.reload('dataTable', {
+                    url: reloadUrl,
+                });
+            }
+            else {
+                layer.msg(data.msg, {icon: 2})
+            }
+        });
+
+    }
+
+</script>
+

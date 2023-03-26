@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fht.dao.UserMapper">
+    <!--***************************自动生成区分以上***************************-->
+    <resultMap id="BaseResultMap" type="com.fht.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="CHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="email" jdbcType="CHAR" property="email"/>
+        <result column="phone" jdbcType="CHAR" property="phone"/>
+        <result column="realname" jdbcType="CHAR" property="realname"/>
+        <result column="department" jdbcType="CHAR" property="department"/>
+        <result column="team" jdbcType="CHAR" property="team"/>
+        <result column="start_school_year" jdbcType="DATE" property="startSchoolYear"/>
+        <result column="leave_school_year" jdbcType="DATE" property="leaveSchoolYear"/>
+        <result column="enable" jdbcType="TINYINT" property="enable"/>
+        <association column="id" select="com.fht.dao.UserRoleMapper.selectUserRole" property="userRole">
+        </association>
+    </resultMap>
+    <resultMap id="ResultMap" type="com.fht.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="CHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="email" jdbcType="CHAR" property="email"/>
+        <result column="phone" jdbcType="CHAR" property="phone"/>
+        <result column="realname" jdbcType="CHAR" property="realname"/>
+        <result column="department" jdbcType="CHAR" property="department"/>
+        <result column="team" jdbcType="CHAR" property="team"/>
+        <result column="start_school_year" jdbcType="DATE" property="startSchoolYear"/>
+        <result column="leave_school_year" jdbcType="DATE" property="leaveSchoolYear"/>
+        <result column="enable" jdbcType="TINYINT" property="enable"/>
+
+    </resultMap>
+    <!--********************************************删除操作********************************************-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="batchDelete">
+        DELETE FROM `user` where `id` in
+        <foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--********************************************插入操作********************************************-->
+    <insert id="insert" parameterType="com.fht.entity.User">
+    insert into user (id, username, `password`, 
+      email, phone, realname, sex,
+      department, team,
+      start_school_year, leave_school_year
+      )
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=CHAR}, #{password,jdbcType=VARCHAR}, 
+      #{email,jdbcType=CHAR}, #{phone,jdbcType=CHAR}, #{realname,jdbcType=CHAR}, #{sex,jdbcType=TINYINT},
+      #{department,jdbcType=CHAR}, #{team,jdbcType=CHAR},
+      #{startSchoolYear,jdbcType=CHAR}, #{leaveSchoolYear,jdbcType=CHAR}
+      )
+  </insert>
+    <!--********************************************更新操作********************************************-->
+    <update id="updateByPrimaryKey" parameterType="com.fht.entity.User">
+        update sports_meeting.user
+        <set>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="username!=null and username!=''">username = #{username,jdbcType=CHAR},</if>
+            <if test="realname!=null and realname!='' ">realname = #{realname,jdbcType=CHAR},</if>
+            <if test="sex!=null">sex = #{sex},</if>
+            <if test="department!=null and department!='' ">department = #{department,jdbcType=CHAR},</if>
+            <if test="team!=null and team!='' ">team = #{team,jdbcType=CHAR},</if>
+            <if test="startSchoolYear!=null and startSchoolYear!='' ">start_school_year = #{startSchoolYear},</if>
+            <if test="leaveSchoolYear!=null and leaveSchoolYear!='' ">leave_school_year = #{leaveSchoolYear},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updatePassByUsername">
+    update user
+    set password = #{password}
+    where username = #{username}
+  </update>
+    <update id="updatePassById">
+        update user
+        set password = #{password}
+        where id = #{id}
+    </update>
+    <update id="updateEnableById">
+        update user
+        set enable = #{enable,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <!--********************************************查询********************************************-->
+    <!-- where 标签能够自动把第一个条件的and去掉 （&amp;amp;转义符为&amp;amp;） -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        select u.id, u.username, u.email, u.phone, u.realname, u.sex, u.department, u.team,
+        u.start_school_year, u.leave_school_year, u.`enable`
+        from user u
+        <where>
+            <if test="username!=null and username!=''">
+                binary username= #{username}
+            </if>
+            <if test="id!=null and id!=''">
+                id= #{id}
+            </if>
+        </where>
+        limit 1
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select u.id, u.username, u.email, u.phone, u.realname, u.sex, u.department, u.team,
+        u.start_school_year, u.leave_school_year, u.`enable`
+    from user u
+    </select>
+    <select id="selectAllBase" resultMap="ResultMap">
+    select u.id, u.username, u.email, u.phone, u.realname, u.sex, u.department, u.team,
+        u.start_school_year, u.leave_school_year, u.`enable`
+    from user u
+    </select>
+    <!--模糊查询-->
+    <select id="fuzzySelectByCondition" resultMap="BaseResultMap">
+        select u.id, u.username, u.email, u.phone, u.realname, u.sex, u.department, u.team,
+        u.start_school_year, u.leave_school_year, u.`enable`
+        from user u
+        <where>
+            <if test="username!=null and username!='' ">
+                and binary username like CONCAT('%',#{username},'%')
+            </if>
+            <if test="realname!=null and realname!=''">
+                and realname like CONCAT('%',#{realname},'%')
+            </if>
+        </where>
+    </select>
+    <!--查询全部信息包括密码-->
+    <select id="selectFullByUsername" resultMap="BaseResultMap">
+        select id, username, `password`, email, phone, realname, sex,department, team,
+        start_school_year, leave_school_year, `enable`
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, username, email, phone, realname, sex,department, team,
+    start_school_year, leave_school_year, `enable`
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>
